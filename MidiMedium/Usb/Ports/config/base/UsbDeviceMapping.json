@@ -1,0 +1,8 @@
+{
+    "devices" :
+    [
+        {"MOOG:Moog Minitaur" : "moog__minitaur"},
+        {"Elektron A4:Analog Four" : "elektron__a4"},
+        {"Deluge:Deluge MIDI 1" : "synthstorm__deluge"}
+    ]
+}

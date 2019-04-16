@@ -1,0 +1,12 @@
+{
+    "devices on usb port" :
+    {
+        "Moog Minitaur:Moog Minitaur MIDI 1 23:3": "moog__minitaur"
+    },
+    "devices" :
+    {
+        "MOOG:Moog Minitaur" :      "moog__minitaur",
+        "Elektron A4:Analog Four" : "elektron__a4",
+        "Deluge:Deluge MIDI 1" :    "synthstorm__deluge"
+    }
+}
