@@ -10,4 +10,4 @@ add_library(usbMidiPortHandling STATIC
 )
 
 target_include_directories(usbMidiPortHandling PUBLIC ${CMAKE_CURRENT_LIST_DIR})
-target_link_libraries(usbMidiPortHandling rtmidi arduinoJson tools usbmidi midi)
+target_link_libraries(usbMidiPortHandling rtmidi usbmidi midi)
