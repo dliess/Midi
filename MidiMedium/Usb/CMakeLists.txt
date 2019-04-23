@@ -7,6 +7,7 @@ add_subdirectory(Ports)
 add_library(usbmidi STATIC 
     "UsbMidiOut.cpp"
     "UsbMidiIn.cpp"
+    "rtmidi/RtMidi.cpp"
 )
 
 target_include_directories(usbmidi PUBLIC ${CMAKE_CURRENT_LIST_DIR})
