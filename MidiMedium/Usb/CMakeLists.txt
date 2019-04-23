@@ -17,3 +17,10 @@ target_include_directories(usbmidi PUBLIC
 )
 
 target_link_libraries(usbmidi PUBLIC usbMidiPortHandling)
+
+target_compile_definitions(usbmidi PUBLIC "__LINUX_ALSA__")
+target_link_libraries(usbmidi PUBLIC asound)
+
+# Enable jack: - both alsa and jack can be enabled at the same time
+# target_compile_definitions(usbmidi PUBLIC "__UNIX_JACK__")
+# target_link_libraries(usbmidi PUBLIC jack)
