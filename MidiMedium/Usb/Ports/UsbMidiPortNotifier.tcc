@@ -2,9 +2,9 @@
 #include <iterator>  // std::inserter
 
 template<class PortListProvider>
-midi::PortNotifier<PortListProvider>::PortNotifier(PortListProvider& rPortListProvider) :
-    m_rPortListProvider(rPortListProvider)
+bool midi::PortNotifier<PortListProvider>::init()
 {
+    return m_portListProvider.init();
 }
 
 template<class PortListProvider>
@@ -26,7 +26,7 @@ bool midi::PortNotifier<PortListProvider>::update()
     PortInfoSet newPortsSet;
     PortInfoSet removedPortsSet;
 
-    if(!m_rPortListProvider.getPorts(actualPortsSet))
+    if(!m_portListProvider.getPorts(actualPortsSet))
     {
         return false;
     }
