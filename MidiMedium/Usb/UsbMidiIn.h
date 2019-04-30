@@ -2,13 +2,11 @@
 #define USB_MIDI_IN_H
 
 #include "IMidiInMedium.h"
+#include <rtmidi/RtMidi.h>
 #include <vector>
 #include <cstdint>
 #include <functional>
-
-class RtMidiIn;
-
-class RtMidiOut;
+#include <optional>
 
 namespace midi
 {
@@ -28,7 +26,7 @@ public:
     void update() override;
 
 private:
-    RtMidiIn*   m_pRtMidiIn;
+    std::optional<RtMidiIn> m_rtMidiIn;
     std::string m_portName;
     std::string m_deviceName;
     Callback    m_cb;

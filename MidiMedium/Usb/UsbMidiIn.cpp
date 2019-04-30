@@ -1,41 +1,39 @@
 #include "UsbMidiIn.h"
 #include "RtMidiAdaptTypes.h"
-#include <rtmidi/RtMidi.h>
 //#include <iostream>
 
 using namespace midi;
 
 UsbMidiIn::UsbMidiIn() :
-    m_pRtMidiIn(nullptr)
+    m_rtMidiIn()
 {
 }
 
 UsbMidiIn::~UsbMidiIn()
 {
-    if(m_pRtMidiIn)
+    if(m_rtMidiIn)
     {
-        m_pRtMidiIn->closePort();
+        m_rtMidiIn->closePort();
     }
-    delete m_pRtMidiIn;
 }
 
 bool UsbMidiIn::openPort(int portNmbr)
 {
     try
     {
-        if(!m_pRtMidiIn)
+        if(!m_rtMidiIn)
         {
-            m_pRtMidiIn = new RtMidiIn;
-            m_pRtMidiIn->setCallback(helperCb, this);
+            m_rtMidiIn.emplace();
+            m_rtMidiIn->setCallback(helperCb, this);
         }
-        m_pRtMidiIn->openPort(portNmbr);
-        m_pRtMidiIn->ignoreTypes( /*sysex*/false, /*timimng*/true, /*sense*/true );
-        m_portName = rtmidiadapt::DeviceOnPort( m_pRtMidiIn->getPortName(portNmbr) ).getPortName();
-        m_deviceName = rtmidiadapt::DeviceOnPort( m_pRtMidiIn->getPortName(portNmbr) ).getDeviceName();
+        m_rtMidiIn->openPort(portNmbr);
+        m_rtMidiIn->ignoreTypes( /*sysex*/false, /*timimng*/true, /*sense*/true );
+        m_portName = rtmidiadapt::DeviceOnPort( m_rtMidiIn->getPortName(portNmbr) ).getPortName();
+        m_deviceName = rtmidiadapt::DeviceOnPort( m_rtMidiIn->getPortName(portNmbr) ).getDeviceName();
     }
     catch ( RtMidiError &error )
     {
-        m_pRtMidiIn = nullptr;
+        m_rtMidiIn.reset();
         error.printMessage();
         return false;
     }
@@ -44,9 +42,9 @@ bool UsbMidiIn::openPort(int portNmbr)
 
 void UsbMidiIn::closePort()
 {
-    if(m_pRtMidiIn)
+    if(m_rtMidiIn)
     {
-        m_pRtMidiIn->closePort();
+        m_rtMidiIn->closePort();
     }
 }
 
@@ -84,7 +82,7 @@ void UsbMidiIn::helperCb(double timeStamp,
 }
 
 void UsbMidiIn::cb(double timeStamp,
-                         std::vector<uint8_t>& message)
+                   std::vector<uint8_t>& message)
 {
     if(m_cb)
     {

@@ -1,39 +1,37 @@
 #include "UsbMidiOut.h"
 #include "RtMidiAdaptTypes.h"
-#include <rtmidi/RtMidi.h>
 //#include <iostream>
 
 using namespace midi;
 
 UsbMidiOut::UsbMidiOut() :
-    m_pRtMidiOut(nullptr)
+    m_rtMidiOut()
 {
 }
 
 UsbMidiOut::~UsbMidiOut()
 {
-    if(m_pRtMidiOut)
+    if(m_rtMidiOut)
     {
-        m_pRtMidiOut->closePort();
+        m_rtMidiOut->closePort();
     }
-    delete m_pRtMidiOut;
 }
 
 bool UsbMidiOut::openPort(int portNmbr)
 {
     try
     {
-        if(!m_pRtMidiOut)
+        if(!m_rtMidiOut)
         {
-            m_pRtMidiOut = new RtMidiOut;
+            m_rtMidiOut.emplace();
         }
-        m_pRtMidiOut->openPort(portNmbr);
-        m_portName = rtmidiadapt::DeviceOnPort( m_pRtMidiOut->getPortName(portNmbr) ).getPortName();
-        m_deviceName = rtmidiadapt::DeviceOnPort( m_pRtMidiOut->getPortName(portNmbr) ).getDeviceName();
+        m_rtMidiOut->openPort(portNmbr);
+        m_portName = rtmidiadapt::DeviceOnPort( m_rtMidiOut->getPortName(portNmbr) ).getPortName();
+        m_deviceName = rtmidiadapt::DeviceOnPort( m_rtMidiOut->getPortName(portNmbr) ).getDeviceName();
     }
     catch ( RtMidiError &error )
     {
-        m_pRtMidiOut = nullptr;
+        m_rtMidiOut.reset();
         error.printMessage();
         return false;
     }
@@ -42,9 +40,9 @@ bool UsbMidiOut::openPort(int portNmbr)
 
 void UsbMidiOut::closePort()
 {
-    if(m_pRtMidiOut)
+    if(m_rtMidiOut)
     {
-        m_pRtMidiOut->closePort();
+        m_rtMidiOut->closePort();
     }
 }
 
@@ -67,7 +65,7 @@ bool UsbMidiOut::send(const std::vector<uint8_t>& message)
 {
     try
     {
-        m_pRtMidiOut->sendMessage( &message );
+        m_rtMidiOut->sendMessage( &message );
     }
     catch ( RtMidiError &error )
     {

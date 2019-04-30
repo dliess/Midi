@@ -1,9 +1,11 @@
 #ifndef USB_MIDI_OUT_H
 #define USB_MIDI_OUT_H
 
+#include "IMidiOutMedium.h"
+#include <rtmidi/RtMidi.h>
 #include <vector>
 #include <cstdint>
-#include "IMidiOutMedium.h"
+#include <optional>
 
 class RtMidiOut;
 
@@ -22,7 +24,7 @@ public:
     std::string getDeviceName() const override;
     bool send(const std::vector<uint8_t>& message) override;
 private:
-    RtMidiOut* m_pRtMidiOut;
+    std::optional<RtMidiOut> m_rtMidiOut;
     std::string m_portName;
     std::string m_deviceName;
 };
