@@ -15,10 +15,8 @@ namespace midi
 class UsbMidiOut : public IMidiOutMedium
 {
 public:
-    UsbMidiOut();
-    ~UsbMidiOut();
-    bool openPort(int portNmbr);
-    void closePort();
+    bool openPort(int portNmbr) noexcept;
+    void closePort() noexcept;
     Type getType() const override;
     std::string getPortName() const override;
     std::string getDeviceName() const override;

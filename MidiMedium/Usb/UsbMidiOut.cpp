@@ -4,20 +4,7 @@
 
 using namespace midi;
 
-UsbMidiOut::UsbMidiOut() :
-    m_rtMidiOut()
-{
-}
-
-UsbMidiOut::~UsbMidiOut()
-{
-    if(m_rtMidiOut)
-    {
-        m_rtMidiOut->closePort();
-    }
-}
-
-bool UsbMidiOut::openPort(int portNmbr)
+bool UsbMidiOut::openPort(int portNmbr) noexcept
 {
     try
     {
@@ -38,7 +25,7 @@ bool UsbMidiOut::openPort(int portNmbr)
     return true;
 }
 
-void UsbMidiOut::closePort()
+void UsbMidiOut::closePort() noexcept
 {
     if(m_rtMidiOut)
     {
