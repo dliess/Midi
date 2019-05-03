@@ -4,23 +4,36 @@
 
 using namespace midi;
 
+UsbMidiIn::UsbMidiIn() noexcept
+{
+}
+
+UsbMidiIn::UsbMidiIn(UsbMidiIn&& other) noexcept :
+    m_pRtMidiIn(std::move(other.m_pRtMidiIn)),
+    m_portName(std::move(m_portName)),
+    m_deviceName(std::move(m_deviceName)),
+    m_cb(std::move(m_cb))
+{
+}
+
 bool UsbMidiIn::openPort(int portNmbr) noexcept
 {
+    if(m_pRtMidiIn)
+    {
+        return true;
+    }
     try
     {
-        if(!m_rtMidiIn)
-        {
-            m_rtMidiIn.emplace();
-            m_rtMidiIn->setCallback(helperCb, this);
-        }
-        m_rtMidiIn->openPort(portNmbr);
-        m_rtMidiIn->ignoreTypes( /*sysex*/false, /*timimng*/true, /*sense*/true );
-        m_portName = rtmidiadapt::DeviceOnPort( m_rtMidiIn->getPortName(portNmbr) ).getPortName();
-        m_deviceName = rtmidiadapt::DeviceOnPort( m_rtMidiIn->getPortName(portNmbr) ).getDeviceName();
+        m_pRtMidiIn = std::make_unique<RtMidiIn>();
+        m_pRtMidiIn->openPort(portNmbr);
+        m_pRtMidiIn->setCallback(helperCb, this);
+        m_pRtMidiIn->ignoreTypes( /*sysex*/false, /*timimng*/true, /*sense*/true );
+        m_portName = rtmidiadapt::DeviceOnPort( m_pRtMidiIn->getPortName(portNmbr) ).getPortName();
+        m_deviceName = rtmidiadapt::DeviceOnPort( m_pRtMidiIn->getPortName(portNmbr) ).getDeviceName();
     }
     catch ( RtMidiError &error )
     {
-        m_rtMidiIn.reset();
+        m_pRtMidiIn.reset();
         error.printMessage();
         return false;
     }
@@ -29,9 +42,9 @@ bool UsbMidiIn::openPort(int portNmbr) noexcept
 
 void UsbMidiIn::closePort() noexcept
 {
-    if(m_rtMidiIn)
+    if(m_pRtMidiIn)
     {
-        m_rtMidiIn->closePort();
+        m_pRtMidiIn->closePort();
     }
 }
 
@@ -57,7 +70,7 @@ void UsbMidiIn::registerCallback(Callback cb)
 
 void UsbMidiIn::update()
 {
-
+    // TODO for later
 }
 
 void UsbMidiIn::helperCb(double timeStamp,

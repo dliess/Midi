@@ -4,21 +4,34 @@
 
 using namespace midi;
 
+UsbMidiOut::UsbMidiOut() noexcept
+{
+}
+
+UsbMidiOut::UsbMidiOut(UsbMidiOut&& other) noexcept :
+    m_pRtMidiOut(std::move(other.m_pRtMidiOut)),
+    m_portName(std::move(m_portName)),
+    m_deviceName(std::move(m_deviceName))
+{
+}
+
+
 bool UsbMidiOut::openPort(int portNmbr) noexcept
 {
+    if(m_pRtMidiOut)
+    {
+        return true;
+    }
     try
     {
-        if(!m_rtMidiOut)
-        {
-            m_rtMidiOut.emplace();
-        }
-        m_rtMidiOut->openPort(portNmbr);
-        m_portName = rtmidiadapt::DeviceOnPort( m_rtMidiOut->getPortName(portNmbr) ).getPortName();
-        m_deviceName = rtmidiadapt::DeviceOnPort( m_rtMidiOut->getPortName(portNmbr) ).getDeviceName();
+        m_pRtMidiOut = std::make_unique<RtMidiOut>();
+        m_pRtMidiOut->openPort(portNmbr);
+        m_portName = rtmidiadapt::DeviceOnPort( m_pRtMidiOut->getPortName(portNmbr) ).getPortName();
+        m_deviceName = rtmidiadapt::DeviceOnPort( m_pRtMidiOut->getPortName(portNmbr) ).getDeviceName();
     }
     catch ( RtMidiError &error )
     {
-        m_rtMidiOut.reset();
+        m_pRtMidiOut.reset();
         error.printMessage();
         return false;
     }
@@ -27,9 +40,9 @@ bool UsbMidiOut::openPort(int portNmbr) noexcept
 
 void UsbMidiOut::closePort() noexcept
 {
-    if(m_rtMidiOut)
+    if(m_pRtMidiOut)
     {
-        m_rtMidiOut->closePort();
+        m_pRtMidiOut->closePort();
     }
 }
 
@@ -52,7 +65,7 @@ bool UsbMidiOut::send(const std::vector<uint8_t>& message)
 {
     try
     {
-        m_rtMidiOut->sendMessage( &message );
+        m_pRtMidiOut->sendMessage( &message );
     }
     catch ( RtMidiError &error )
     {

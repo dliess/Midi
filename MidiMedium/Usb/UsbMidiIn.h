@@ -6,7 +6,7 @@
 #include <vector>
 #include <cstdint>
 #include <functional>
-#include <optional>
+#include <memory>
 
 namespace midi
 {
@@ -14,6 +14,11 @@ namespace midi
 class UsbMidiIn : public IMidiInMedium
 {
 public:
+    UsbMidiIn() noexcept;
+    UsbMidiIn(const UsbMidiIn& other) = delete;
+    UsbMidiIn(UsbMidiIn&& other) noexcept;
+    UsbMidiIn& operator=(const UsbMidiIn& other) = delete;
+    
     bool openPort(int portNmbr) noexcept;
     void closePort() noexcept;
 
@@ -24,7 +29,7 @@ public:
     void update() override;
 
 private:
-    std::optional<RtMidiIn> m_rtMidiIn;
+    std::unique_ptr<RtMidiIn> m_pRtMidiIn;
     std::string m_portName;
     std::string m_deviceName;
     Callback    m_cb;

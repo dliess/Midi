@@ -5,7 +5,7 @@
 #include <rtmidi/RtMidi.h>
 #include <vector>
 #include <cstdint>
-#include <optional>
+#include <memory>
 
 class RtMidiOut;
 
@@ -15,6 +15,11 @@ namespace midi
 class UsbMidiOut : public IMidiOutMedium
 {
 public:
+    UsbMidiOut() noexcept;
+    UsbMidiOut(const UsbMidiOut& other) = delete;
+    UsbMidiOut(UsbMidiOut&& other) noexcept;
+    UsbMidiOut& operator=(const UsbMidiOut& other) = delete;
+
     bool openPort(int portNmbr) noexcept;
     void closePort() noexcept;
     Type getType() const override;
@@ -22,7 +27,7 @@ public:
     std::string getDeviceName() const override;
     bool send(const std::vector<uint8_t>& message) override;
 private:
-    std::optional<RtMidiOut> m_rtMidiOut;
+    std::unique_ptr<RtMidiOut> m_pRtMidiOut;
     std::string m_portName;
     std::string m_deviceName;
 };
