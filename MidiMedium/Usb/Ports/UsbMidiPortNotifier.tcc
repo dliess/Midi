@@ -8,15 +8,15 @@ bool midi::PortNotifier<PortListProvider>::init()
 }
 
 template<class PortListProvider>
-void midi::PortNotifier<PortListProvider>::registerNewPortCb(NewPortCb cb)
+void midi::PortNotifier<PortListProvider>::registerNewPortCb(NewPortCb cb, const CbFilter& filter)
 {
-    m_newPortCbs.push_back(cb);
+    m_newPortCbs.push_back({cb, filter});
 }
 
 template<class PortListProvider>
-void midi::PortNotifier<PortListProvider>::registerRemovedPortCb(RemovedPortCb cb)
+void midi::PortNotifier<PortListProvider>::registerRemovedPortCb(RemovedPortCb cb, const CbFilter& filter)
 {
-    m_removedPortCbs.push_back(cb);
+    m_removedPortCbs.push_back({cb, filter});
 }
 
 template<class PortListProvider>
@@ -43,7 +43,14 @@ bool midi::PortNotifier<PortListProvider>::update()
     {
         for(auto& portCb : m_newPortCbs)
         {
-            portCb(portInfo.portIndex, portInfo.deviceOnPort);
+            if(portInfo.deviceOnPort.getDeviceName().find(portCb.filter.include) == 0)
+            {
+                if(portCb.filter.exclude.empty() ||
+                   portInfo.deviceOnPort.getDeviceName().find(portCb.filter.exclude) != 0)
+                {
+                    portCb.cb(portInfo.portIndex, portInfo.deviceOnPort);
+                }
+            }
         }
     }
 
@@ -51,7 +58,14 @@ bool midi::PortNotifier<PortListProvider>::update()
     {
         for(auto& portCb : m_removedPortCbs)
         {
-            portCb(portInfo.deviceOnPort);
+            if(portInfo.deviceOnPort.getDeviceName().find(portCb.filter.include) == 0)
+            {
+                if(portCb.filter.exclude.empty() || 
+                   portInfo.deviceOnPort.getDeviceName().find(portCb.filter.exclude) != 0)
+                {
+                    portCb.cb(portInfo.deviceOnPort);
+                }
+            }
         }
     }
     m_lastPorts = actualPortsSet;

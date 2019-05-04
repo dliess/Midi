@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <vector>
+#include <optional>
 #include "RtMidiAdaptTypes.h"
 
 #include "UsbMidiInputPortListProvider.h"
@@ -17,15 +18,31 @@ class PortNotifier
 public:
     using NewPortCb = std::function<void(rtmidiadapt::PortIndex, const rtmidiadapt::DeviceOnPort&)>;
     using RemovedPortCb = std::function<void(const rtmidiadapt::DeviceOnPort&)>;
+    struct CbFilter
+    {
+        std::string include;
+        std::string exclude;
+        bool        exclusive{false};
+    };
     bool init();
-    void registerNewPortCb(NewPortCb cb);
-    void registerRemovedPortCb(RemovedPortCb cb);
+    void registerNewPortCb(NewPortCb cb, const CbFilter& filter = CbFilter());
+    void registerRemovedPortCb(RemovedPortCb cb ,const CbFilter& filter = CbFilter());
     bool update();
 private:
     PortListProvider           m_portListProvider;
     PortInfoSet                m_lastPorts;
-    std::vector<NewPortCb>     m_newPortCbs;
-    std::vector<RemovedPortCb> m_removedPortCbs;
+    struct InputCb
+    {
+        NewPortCb cb;
+        CbFilter  filter;
+    };
+    struct OutputCb
+    {
+        RemovedPortCb cb;
+        CbFilter      filter;
+    };
+    std::vector<InputCb>  m_newPortCbs;
+    std::vector<OutputCb> m_removedPortCbs;
 };
 
 struct PortNotifiers
