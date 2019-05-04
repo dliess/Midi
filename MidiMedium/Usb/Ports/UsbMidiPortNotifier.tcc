@@ -1,6 +1,23 @@
 #include <algorithm> // std::set_difference
 #include <iterator>  // std::inserter
-
+#include <vector>
+/*
+namespace util
+{
+inline
+std::vector<std::string> split(const std::string& s, char delimiter)
+{
+   std::vector<std::string> tokens;
+   std::string token;
+   std::istringstream tokenStream(s);
+   while (std::getline(tokenStream, token, delimiter))
+   {
+      tokens.push_back(token);
+   }
+   return tokens;
+}
+} // namespace util
+*/
 template<class PortListProvider>
 bool midi::PortNotifier<PortListProvider>::init()
 {
@@ -43,10 +60,9 @@ bool midi::PortNotifier<PortListProvider>::update()
     {
         for(auto& portCb : m_newPortCbs)
         {
-            if(portInfo.deviceOnPort.getDeviceName().find(portCb.filter.include) == 0)
+            if(included(portInfo.deviceOnPort.getDeviceName(), portCb.filter.includes))
             {
-                if(portCb.filter.exclude.empty() ||
-                   portInfo.deviceOnPort.getDeviceName().find(portCb.filter.exclude) != 0)
+                if(!excluded(portInfo.deviceOnPort.getDeviceName(), portCb.filter.excludes))
                 {
                     portCb.cb(portInfo.portIndex, portInfo.deviceOnPort);
                 }
@@ -58,10 +74,9 @@ bool midi::PortNotifier<PortListProvider>::update()
     {
         for(auto& portCb : m_removedPortCbs)
         {
-            if(portInfo.deviceOnPort.getDeviceName().find(portCb.filter.include) == 0)
+            if(included(portInfo.deviceOnPort.getDeviceName(), portCb.filter.includes))
             {
-                if(portCb.filter.exclude.empty() || 
-                   portInfo.deviceOnPort.getDeviceName().find(portCb.filter.exclude) != 0)
+                if(!excluded(portInfo.deviceOnPort.getDeviceName(), portCb.filter.excludes))
                 {
                     portCb.cb(portInfo.deviceOnPort);
                 }
@@ -70,4 +85,38 @@ bool midi::PortNotifier<PortListProvider>::update()
     }
     m_lastPorts = actualPortsSet;
     return true;
+}
+
+template<class PortListProvider>
+bool midi::PortNotifier<PortListProvider>::included(const std::string& devName, const std::vector<std::string>& includes)
+{
+    if(0 == includes.size())
+    {
+        return true;
+    }
+    for(auto& include : includes)
+    {
+        if(0 == devName.find(include))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+template<class PortListProvider>
+bool midi::PortNotifier<PortListProvider>::excluded(const std::string& devName, const std::vector<std::string>& excludes)
+{
+    if(0 == excludes.size())
+    {
+        return false;
+    }
+    for(auto& exclude : excludes)
+    {
+        if(0 == devName.find(exclude))
+        {
+            return true;
+        }
+    }
+    return false;
 }

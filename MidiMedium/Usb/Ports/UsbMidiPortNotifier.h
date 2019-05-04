@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <vector>
+#include <string>
 #include <optional>
 #include "RtMidiAdaptTypes.h"
 
@@ -20,9 +21,9 @@ public:
     using RemovedPortCb = std::function<void(const rtmidiadapt::DeviceOnPort&)>;
     struct CbFilter
     {
-        std::string include;
-        std::string exclude;
-        bool        exclusive{false};
+        std::vector<std::string> includes;
+        std::vector<std::string> excludes;
+        bool        exclusive{false}; // TODO
     };
     bool init();
     void registerNewPortCb(NewPortCb cb, const CbFilter& filter = CbFilter());
@@ -43,6 +44,8 @@ private:
     };
     std::vector<InputCb>  m_newPortCbs;
     std::vector<OutputCb> m_removedPortCbs;
+    static bool included(const std::string& devName, const std::vector<std::string>& includes);
+    static bool excluded(const std::string& devName, const std::vector<std::string>& excludes);
 };
 
 struct PortNotifiers
