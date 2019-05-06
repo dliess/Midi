@@ -1,0 +1,96 @@
+@startuml
+
+class Midi1Input
+{
+    +Midi1Input(std::unique_ptr<IMidiInMedium> pMedium);
+    +IMidiInMedium& medium();
+    +void registerMidiInCb(IMidi1InputCallback* pMidiInCb);
+    +void update();
+    -std::unique_ptr<IMidiInMedium> m_pMedium;
+    -IMidi1InputCallback*           m_pMidiInCb;
+    -void processIncomingData(double timestamp, std::vector<uint8_t>& data);
+}
+
+class Midi1Output
+{
+    +Midi1Output(std::unique_ptr<IMidiOutMedium> pMedium);
+    +IMidiOutMedium& medium();
+    +bool noteOn(uint8_t channel, uint8_t note, uint8_t velocity);
+    +bool noteOff(uint8_t channel, uint8_t note, uint8_t velocity);
+    +bool pitchBend(uint8_t channel, int16_t value);
+    +bool controlParameter(uint8_t channel, uint8_t ccId, uint8_t value);
+    +bool sysEx(const std::vector<uint8_t>& msg);
+    -std::unique_ptr<IMidiOutMedium> m_pMedium;
+    -bool send(const MsgLayout<1>& midiMessage);
+    -bool send(const MsgLayout<2>& midiMessage);
+    -bool send(const MsgLayout<3>& midiMessage);
+}
+
+enum IMidiMedium::Type
+{
+    USB
+    DIN
+    BLE
+}
+
+class IMidiMedium
+{
+    +{abstract}virtual ~IMidiMedium(){}
+    +{abstract}virtual Type getType() const = 0;
+    +{abstract}virtual std::string getPortName() const = 0;
+    +{abstract}virtual std::string getDeviceName() const = 0;
+}
+
+class IMidiInMedium
+{
+    +using Callback = std::function<void(double, std::vector<uint8_t>&)>;
+    +{abstract}virtual void registerCallback(Callback cb) = 0;
+    +{abstract}virtual void update() = 0;
+}
+
+class IMidiOutMedium
+{
+    +{abstract}virtual bool send(const std::vector<uint8_t>& message) = 0;
+}
+
+class UsbMidiIn
+{
+    +UsbMidiIn() noexcept;
+    +UsbMidiIn(const UsbMidiIn& other) = delete;
+    +UsbMidiIn(UsbMidiIn&& other) noexcept;
+    +UsbMidiIn& operator=(const UsbMidiIn& other) = delete;
+    
+    +bool openPort(int portNmbr) noexcept;
+    +void closePort() noexcept;
+
+    +Type getType() const override;
+    +std::string getPortName() const override;
+    +std::string getDeviceName() const override;
+    +void registerCallback(Callback cb) override;
+    +void update() override;
+}
+
+class UsbMidiOut
+{
+    +UsbMidiOut() noexcept;
+    +UsbMidiOut(const UsbMidiOut& other) = delete;
+    +UsbMidiOut(UsbMidiOut&& other) noexcept;
+    +UsbMidiOut& operator=(const UsbMidiOut& other) = delete;
+
+    +bool openPort(int portNmbr) noexcept;
+    +void closePort() noexcept;
+    +Type getType() const override;
+    +std::string getPortName() const override;
+    +std::string getDeviceName() const override;
+    +bool send(const std::vector<uint8_t>& message) override;
+}
+
+IMidiMedium <|-- IMidiInMedium
+IMidiMedium <|-- IMidiOutMedium
+IMidiInMedium <|-- UsbMidiIn
+IMidiOutMedium  <|-- UsbMidiOut
+
+Midi1Input *-- IMidiInMedium
+Midi1Output *-- IMidiOutMedium
+
+@enduml
