@@ -19,6 +19,11 @@ IMidiInMedium& Midi1Input::medium()
     return *m_pMedium;
 }
 
+const IMidiInMedium& Midi1Input::medium() const
+{
+    return *m_pMedium;
+}
+
 void Midi1Input::registerMidiInCb(IMidi1InputCallback* pMidiInCb)
 {
     m_pMidiInCb = pMidiInCb;

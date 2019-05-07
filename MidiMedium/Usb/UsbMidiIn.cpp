@@ -10,9 +10,9 @@ UsbMidiIn::UsbMidiIn() noexcept
 
 UsbMidiIn::UsbMidiIn(UsbMidiIn&& other) noexcept :
     m_pRtMidiIn(std::move(other.m_pRtMidiIn)),
-    m_portName(std::move(m_portName)),
-    m_deviceName(std::move(m_deviceName)),
-    m_cb(std::move(m_cb))
+    m_portName(std::move(other.m_portName)),
+    m_deviceName(std::move(other.m_deviceName)),
+    m_cb(std::move(other.m_cb))
 {
 }
 
@@ -65,7 +65,7 @@ std::string UsbMidiIn::getDeviceName() const
 
 void UsbMidiIn::registerCallback(Callback cb)
 {
-    m_cb = cb;
+    m_cb.push_back(cb);
 }
 
 void UsbMidiIn::update()
@@ -84,9 +84,9 @@ void UsbMidiIn::helperCb(double timeStamp,
 void UsbMidiIn::cb(double timeStamp,
                    std::vector<uint8_t>& message)
 {
-    if(m_cb)
+    for(auto& cb : m_cb)
     {
-        m_cb(timeStamp, message);
+        cb(timeStamp, message);
     }
 }
 

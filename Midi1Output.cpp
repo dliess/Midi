@@ -14,6 +14,11 @@ IMidiOutMedium& Midi1Output::medium()
     return *m_pMedium;
 }
 
+const IMidiOutMedium& Midi1Output::medium() const
+{
+    return *m_pMedium;
+}
+
 bool Midi1Output::noteOn(uint8_t channel, uint8_t note, uint8_t velocity)
 {
     return send( Message<NoteOn>(channel, note, velocity) );

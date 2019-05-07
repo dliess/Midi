@@ -32,7 +32,7 @@ private:
     std::unique_ptr<RtMidiIn> m_pRtMidiIn;
     std::string m_portName;
     std::string m_deviceName;
-    Callback    m_cb;
+    std::vector<Callback> m_cb;
     static void helperCb(double timeStamp,
                          std::vector<unsigned char> *pMessage,
                          void *userData);

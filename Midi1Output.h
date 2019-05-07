@@ -16,6 +16,7 @@ class Midi1Output
 public:
     Midi1Output(std::unique_ptr<IMidiOutMedium> pMedium);
     IMidiOutMedium& medium();
+    const IMidiOutMedium& medium() const;
     bool noteOn(uint8_t channel, uint8_t note, uint8_t velocity);
     bool noteOff(uint8_t channel, uint8_t note, uint8_t velocity);
     bool pitchBend(uint8_t channel, int16_t value);

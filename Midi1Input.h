@@ -21,6 +21,7 @@ class Midi1Input
 public:
     Midi1Input(std::unique_ptr<IMidiInMedium> pMedium);
     IMidiInMedium& medium();
+    const IMidiInMedium& medium() const;
     using Callback = std::function<void(MidiMessage)>;
     void registerMidiInCb(IMidi1InputCallback* pMidiInCb);
     void registerMidiInCb(Callback cb);
