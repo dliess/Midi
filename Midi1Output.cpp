@@ -1,5 +1,5 @@
 #include "Midi1Output.h"
-#include "MidiOutputMessage.h"
+#include "MidiMessage.h"
 #include "IMidiOutMedium.h"
 #include <iostream>
 
@@ -16,27 +16,40 @@ IMidiOutMedium& Midi1Output::medium()
 
 bool Midi1Output::noteOn(uint8_t channel, uint8_t note, uint8_t velocity)
 {
-    return send( OutputMessage<NoteOn>(channel, note, velocity) );
+    return send( Message<NoteOn>(channel, note, velocity) );
 }
 
 bool Midi1Output::noteOff(uint8_t channel, uint8_t note, uint8_t velocity)
 {
-    return send( OutputMessage<NoteOff>(channel, note, velocity) );
+    return send( Message<NoteOff>(channel, note, velocity) );
 }
 
 bool Midi1Output::pitchBend(uint8_t channel, int16_t value)
 {
-    return send( OutputMessage<PitchBend>(channel, value) );
+    return send( Message<PitchBend>(channel, value) );
 }
 
 bool Midi1Output::controlParameter(uint8_t channel, uint8_t ccId, uint8_t value)
 {
-    return send( OutputMessage<ControlChange>(channel, ccId, value) );
+    return send( Message<ControlChange>(channel, ccId, value) );
 }
 
 bool Midi1Output::sysEx(const std::vector<uint8_t>& msg)
 {
     return m_pMedium->send(msg);
+}
+
+template<class... Ts> struct overload : Ts... { using Ts::operator()...; };
+template<class... Ts> overload(Ts...) -> overload<Ts...>;
+
+bool Midi1Output::send(const MidiMessage& msg)
+{
+    mpark::visit(overload{
+        [this](const MsgLayout<1>& msg) { send(msg); },
+        [this](const MsgLayout<2>& msg) { send(msg); },
+        [this](const MsgLayout<3>& msg) { send(msg); },
+        [](auto&& other) { std::cerr << "INTERNAL ERROR, unknown midi message layout" << std::endl; }
+    }, msg);
 }
 
 bool Midi1Output::send(const MsgLayout<1>& midiMessage)

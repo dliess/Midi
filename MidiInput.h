@@ -9,7 +9,7 @@
 #define MIDIINPUT_H_
 
 #include "Midi.h"
-#include "MidiInputMessage.h"
+#include "MidiMessage.h"
 
 
 class HardwareSerial;
@@ -24,7 +24,7 @@ public:
     Input(HardwareSerial& rSerial);
 	MsgType read();
 	template< MsgType msgType >
-	const InputMessage<msgType>& getMessage() const;
+	const Message<msgType>& getMessage() const;
 	inline SysExPayload getSysexMessage() const;
 
 private:

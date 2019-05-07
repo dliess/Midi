@@ -2,6 +2,7 @@
 #define MIDI_1_OUTPUT_H
 
 #include "IMidiOutMedium.h"
+#include "MidiMessage.h"
 #include "Midi.h"
 #include <memory>
 #include <vector>
@@ -20,6 +21,7 @@ public:
     bool pitchBend(uint8_t channel, int16_t value);
     bool controlParameter(uint8_t channel, uint8_t ccId, uint8_t value);
     bool sysEx(const std::vector<uint8_t>& msg);
+    bool send(const MidiMessage& msg);
 private:
     std::unique_ptr<IMidiOutMedium> m_pMedium;
     bool send(const MsgLayout<1>& midiMessage);

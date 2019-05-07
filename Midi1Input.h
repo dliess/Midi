@@ -3,7 +3,9 @@
 
 #include <vector>
 #include <memory>
+#include <functional>
 #include "IMidiInMedium.h"
+#include "MidiMessage.h"
 //class IMidiInMedium;
 
 namespace midi
@@ -19,11 +21,14 @@ class Midi1Input
 public:
     Midi1Input(std::unique_ptr<IMidiInMedium> pMedium);
     IMidiInMedium& medium();
+    using Callback = std::function<void(MidiMessage)>;
     void registerMidiInCb(IMidi1InputCallback* pMidiInCb);
+    void registerMidiInCb(Callback cb);
     void update();
 private:
     std::unique_ptr<IMidiInMedium> m_pMedium;
     IMidi1InputCallback*           m_pMidiInCb;
+    std::vector<Callback>          m_callbacks;
     void processIncomingData(double timestamp, std::vector<uint8_t>& data);
 };
 

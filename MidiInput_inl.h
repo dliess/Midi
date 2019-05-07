@@ -5,9 +5,9 @@ namespace Midi
 {
 
 template < MsgType msgType >
-const InputMessage<msgType>& Input::getMessage() const
+const Message<msgType>& Input::getMessage() const
 {
-	return  *(reinterpret_cast< const InputMessage<msgType>* >(m_message.message()));
+	return  *(reinterpret_cast< const Message<msgType>* >(m_message.message()));
 }
 
 SysExPayload Input::getSysexMessage() const
