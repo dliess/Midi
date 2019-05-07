@@ -208,6 +208,9 @@ using MidiMessage = mpark::variant<
 	Message<ActiveSensing>,
 	Message<SystemReset> >;
 
+template<class... Ts> struct overload : Ts... { using Ts::operator()...; };
+template<class... Ts> overload(Ts...) -> overload<Ts...>;
+
 } //namespace Midi
 
 #endif //MIDI_INPUT_MESSAGE_H_

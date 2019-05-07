@@ -39,9 +39,6 @@ bool Midi1Output::sysEx(const std::vector<uint8_t>& msg)
     return m_pMedium->send(msg);
 }
 
-template<class... Ts> struct overload : Ts... { using Ts::operator()...; };
-template<class... Ts> overload(Ts...) -> overload<Ts...>;
-
 bool Midi1Output::send(const MidiMessage& msg)
 {
     mpark::visit(overload{
