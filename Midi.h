@@ -2,6 +2,7 @@
 #define SOUND_DEVICE_MIDI_H
 
 #include <cstdint>
+#include <string>
 
 namespace midi
 {
@@ -45,6 +46,36 @@ enum MsgType
 	ActiveSensing         = 0xFE,	///< System Real Time - Active Sensing               CIN: 0x0F
 	SystemReset           = 0xFF	///< System Real Time - System Reset                 CIN: 0x0F
 };
+
+MsgType getMsgTypeFromCommand(uint8_t data);
+
+inline
+std::string command2Str(uint8_t command)
+{
+	switch(getMsgTypeFromCommand(command))
+	{
+		case NoteOff                : return "NOff";         
+		case NoteOn                 : return "NOn";             
+		case AfterTouchPoly         : return "ATPoly";     
+		case ControlChange          : return "CC";      
+		case ProgramChange          : return "PC";      
+		case AfterTouchChannel      : return "ATChannel";  
+		case PitchBend              : return "PBend";          
+		case SystemExclusive        : return "SysEx";    
+		case TimeCodeQuarterFrame   : return "TimeCodeQF";
+		case SongPosition           : return "SongPos";       
+		case SongSelect             : return "SongSelect";         
+		case TuneRequest            : return "TuneReq";        
+		case SystemExclusiveEnd     : return "SysExEnd"; 
+		case Clock                  : return "Clock";              
+		case Start                  : return "Start";              
+		case Continue               : return "Continue";          
+		case Stop                   : return "Stop";               
+		case ActiveSensing          : return "ActiveSensing";      
+		case SystemReset            : return "SysReset";
+		default                     : return "Unknown";       
+	}
+}
 
 inline bool isCommand(uint8_t data)
 {
@@ -99,6 +130,7 @@ class MsgLayout<1>
 {
 public:
 	inline uint8_t command() const { return m_command; }
+	inline std::string toString() const { return command2Str(command()); }
 protected:
 	inline MsgLayout(uint8_t command) :
 			  m_command(command) {}
@@ -112,6 +144,7 @@ class MsgLayout<2>
 public:
 	inline uint8_t command() const { return m_command; }
 	inline uint8_t data1() const { return m_data1; }
+	inline std::string toString() const { return command2Str(command()).append(" ").append(std::to_string(data1())); }
 protected:
 	inline MsgLayout(uint8_t command, uint8_t data1) :
 			  m_command(command),
@@ -131,6 +164,10 @@ public:
 	inline uint8_t command() const { return m_command; }
 	inline uint8_t data1() const { return m_data1; }
 	inline uint8_t data2() const { return m_data2; }
+	inline std::string toString() const { return command2Str(command()).append(" ")
+	                                                                   .append(std::to_string(data1()))
+																	   .append(" ")
+																	   .append(std::to_string(data2())); }
 protected:
 	inline MsgLayout(uint8_t command, uint8_t data1, uint8_t data2) :
 	          m_command(command),

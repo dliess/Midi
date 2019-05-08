@@ -15,6 +15,10 @@ class VoiceMsgLayout<2> : public MsgLayout<2>
 {
 public:
 	uint8_t channel() const { return getChannelFromVoiceCommand( command() ); }
+	std::string toString() const { return command2Str(command()).append(" ch:")
+																.append(std::to_string(channel()))
+																.append(" ")
+																.append(std::to_string(data1())); }
 protected:
 	inline VoiceMsgLayout(uint8_t command, uint8_t data1) :
 		MsgLayout<2>(command, data1){}
@@ -25,6 +29,12 @@ class VoiceMsgLayout<3> : public MsgLayout<3>
 {
 public:
 	uint8_t channel() const { return getChannelFromVoiceCommand( command() ); }
+	std::string toString() const { return command2Str(command()).append(" ch:")
+																.append(std::to_string(channel()))
+																.append(" ")
+																.append(std::to_string(data1()))
+																.append(" ")
+																.append(std::to_string(data2())); }
 protected:
 	inline VoiceMsgLayout(uint8_t command, uint8_t data1, uint8_t data2) :
 		MsgLayout<3>(command, data1, data2){}
