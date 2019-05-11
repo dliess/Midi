@@ -19,7 +19,7 @@ bool OutputPortListProvider::init()
     try
     {
         if(!m_pMidiOut)
-            m_pMidiOut = new RtMidiOut;
+            m_pMidiOut = new RtMidiOut(RtMidi::UNIX_JACK);
     }
     catch ( RtMidiError &error )
     {

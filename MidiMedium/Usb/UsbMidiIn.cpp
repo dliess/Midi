@@ -24,7 +24,7 @@ bool UsbMidiIn::openPort(int portNmbr) noexcept
     }
     try
     {
-        m_pRtMidiIn = std::make_unique<RtMidiIn>();
+        m_pRtMidiIn = std::make_unique<RtMidiIn>(RtMidi::UNIX_JACK);
         m_pRtMidiIn->openPort(portNmbr);
         m_pRtMidiIn->setCallback(helperCb, this);
         m_pRtMidiIn->ignoreTypes( /*sysex*/false, /*timimng*/true, /*sense*/true );

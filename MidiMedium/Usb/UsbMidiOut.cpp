@@ -24,7 +24,7 @@ bool UsbMidiOut::openPort(int portNmbr) noexcept
     }
     try
     {
-        m_pRtMidiOut = std::make_unique<RtMidiOut>();
+        m_pRtMidiOut = std::make_unique<RtMidiOut>(RtMidi::UNIX_JACK);
         m_pRtMidiOut->openPort(portNmbr);
         m_portName = rtmidiadapt::DeviceOnPort( m_pRtMidiOut->getPortName(portNmbr) ).getPortName();
         m_deviceName = rtmidiadapt::DeviceOnPort( m_pRtMidiOut->getPortName(portNmbr) ).getDeviceName();
