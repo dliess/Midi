@@ -19,7 +19,7 @@ bool InputPortListProvider::init()
     try
     {
         if(!m_pMidiIn)
-            m_pMidiIn = new RtMidiIn;
+            m_pMidiIn = new RtMidiIn(__RTMIDI_API__);
     }
     catch ( RtMidiError &error )
     {
