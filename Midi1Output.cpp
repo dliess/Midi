@@ -52,6 +52,7 @@ bool Midi1Output::send(const MidiMessage& msg)
         [this](const MsgLayout<3>& msg) { send(msg); },
         [](auto&& other) { std::cerr << "INTERNAL ERROR, unknown midi message layout" << std::endl; }
     }, msg);
+    return true;
 }
 
 bool Midi1Output::send(const MsgLayout<1>& midiMessage)
