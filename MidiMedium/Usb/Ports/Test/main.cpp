@@ -25,16 +25,16 @@ int main()
         return -1;
     }
 
-    inputPortListChangeHandler.registerNewPortCb([](rtmidiadapt::PortIndex i, const rtmidiadapt::DeviceOnPort& devOnPort){
+    inputPortListChangeHandler.registerNewPortCb([](rtmidiadapt::PortIndex i, const rtmidiadapt::DeviceOnUsbPort& devOnUsbPort){
         std::cout << "New input " << i << " : " << devOnPort << std::endl;
     });
-    inputPortListChangeHandler.registerRemovedPortCb([](const rtmidiadapt::DeviceOnPort& devOnPort){
+    inputPortListChangeHandler.registerRemovedPortCb([](const rtmidiadapt::DeviceOnUsbPort& devOnUsbPort){
         std::cout << "Removed input " << devOnPort << std::endl;
     });
-    outputPortListChangeHandler.registerNewPortCb([](rtmidiadapt::PortIndex i, const rtmidiadapt::DeviceOnPort& devOnPort){
+    outputPortListChangeHandler.registerNewPortCb([](rtmidiadapt::PortIndex i, const rtmidiadapt::DeviceOnUsbPort& devOnUsbPort){
         std::cout << "New output " << i << " : " << devOnPort << std::endl;
     });
-    outputPortListChangeHandler.registerRemovedPortCb([](const rtmidiadapt::DeviceOnPort& devOnPort){
+    outputPortListChangeHandler.registerRemovedPortCb([](const rtmidiadapt::DeviceOnUsbPort& devOnUsbPort){
         std::cout << "Removed output " << devOnPort << std::endl;
     });
 

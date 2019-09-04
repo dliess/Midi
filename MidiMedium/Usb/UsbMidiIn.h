@@ -30,7 +30,7 @@ public:
 
 private:
     std::unique_ptr<RtMidiIn> m_pRtMidiIn;
-    std::string m_portName;
+    std::string m_usbPortName;
     std::string m_deviceName;
     std::vector<Callback> m_cb;
     static void helperCb(double timeStamp,

@@ -10,7 +10,7 @@ UsbMidiOut::UsbMidiOut() noexcept
 
 UsbMidiOut::UsbMidiOut(UsbMidiOut&& other) noexcept :
     m_pRtMidiOut(std::move(other.m_pRtMidiOut)),
-    m_portName(std::move(m_portName)),
+    m_usbPortName(std::move(m_usbPortName)),
     m_deviceName(std::move(m_deviceName))
 {
 }
@@ -26,8 +26,8 @@ bool UsbMidiOut::openPort(int portNmbr) noexcept
     {
         m_pRtMidiOut = std::make_unique<RtMidiOut>(__RTMIDI_API__);
         m_pRtMidiOut->openPort(portNmbr);
-        m_portName = rtmidiadapt::DeviceOnPort( m_pRtMidiOut->getPortName(portNmbr) ).getPortName();
-        m_deviceName = rtmidiadapt::DeviceOnPort( m_pRtMidiOut->getPortName(portNmbr) ).getDeviceName();
+        m_usbPortName = rtmidiadapt::DeviceOnUsbPort( m_pRtMidiOut->getPortName(portNmbr) ).getUsbPortName();
+        m_deviceName = rtmidiadapt::DeviceOnUsbPort( m_pRtMidiOut->getPortName(portNmbr) ).getDeviceName();
     }
     catch ( RtMidiError &error )
     {
@@ -53,7 +53,7 @@ IMidiMedium::Type UsbMidiOut::getType() const
 
 std::string UsbMidiOut::getPortName() const
 {
-    return m_portName;
+    return m_usbPortName;
 }
 
 std::string UsbMidiOut::getDeviceName() const

@@ -22,7 +22,7 @@ public:
     Midi1Input(std::unique_ptr<IMidiInMedium> pMedium);
     IMidiInMedium& medium();
     const IMidiInMedium& medium() const;
-    using Callback = std::function<void(MidiMessage)>;
+    using Callback = std::function<void(const MidiMessage&)>;
     void registerMidiInCb(IMidi1InputCallback* pMidiInCb);
     void registerMidiInCb(Callback cb);
     void update();

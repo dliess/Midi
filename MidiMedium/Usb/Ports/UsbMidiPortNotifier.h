@@ -17,8 +17,8 @@ template<class PortListProvider>
 class PortNotifier
 {
 public:
-    using NewPortCb = std::function<void(rtmidiadapt::PortIndex, const rtmidiadapt::DeviceOnPort&)>;
-    using RemovedPortCb = std::function<void(const rtmidiadapt::DeviceOnPort&)>;
+    using NewPortCb = std::function<void(rtmidiadapt::PortIndex, const rtmidiadapt::DeviceOnUsbPort&)>;
+    using RemovedPortCb = std::function<void(const rtmidiadapt::DeviceOnUsbPort&)>;
     struct CbFilter
     {
         std::vector<std::string> includes;

@@ -221,6 +221,6 @@ using MidiMessage = mpark::variant<
 template<class... Ts> struct overload : Ts... { using Ts::operator()...; };
 template<class... Ts> overload(Ts...) -> overload<Ts...>;
 
-} //namespace Midi
+} //namespace midi
 
 #endif //MIDI_INPUT_MESSAGE_H_

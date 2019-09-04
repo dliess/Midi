@@ -28,7 +28,7 @@ public:
     bool send(const std::vector<uint8_t>& message) override;
 private:
     std::unique_ptr<RtMidiOut> m_pRtMidiOut;
-    std::string m_portName;
+    std::string m_usbPortName;
     std::string m_deviceName;
 };
 

@@ -14,13 +14,13 @@ namespace rtmidiadapt
 using DeviceName = std::string;
 using PortName = std::string;
 
-class DeviceOnPort
+class DeviceOnUsbPort
 {
 public:
-    DeviceOnPort(const std::string& devOnPortStr) :
+    DeviceOnUsbPort(const std::string& devOnPortStr) :
         m_id(devOnPortStr)
     {}
-    bool operator<(const DeviceOnPort& rhs) const
+    bool operator<(const DeviceOnUsbPort& rhs) const
     {
         return m_id < rhs.m_id;
     }
@@ -34,7 +34,7 @@ public:
         }
         return retVal;
     }
-    PortName getPortName() const
+    PortName getUsbPortName() const
     {
         PortName retVal(m_id);
         std::size_t lastSpace = retVal.rfind(' ');
@@ -46,14 +46,14 @@ public:
     }
     std::string toStr() const { return m_id; }
 private:
-    friend std::ostream& operator<<(std::ostream& ostr, const DeviceOnPort& devOnPort);
+    friend std::ostream& operator<<(std::ostream& ostr, const DeviceOnUsbPort& devOnUsbPort);
     std::string m_id;
 };
 
 inline
-std::ostream& operator<<(std::ostream& ostr, const DeviceOnPort& devOnPort)
+std::ostream& operator<<(std::ostream& ostr, const DeviceOnUsbPort& devOnUsbPort)
 {
-    ostr << devOnPort.m_id;
+    ostr << devOnUsbPort.m_id;
     return ostr;
 }
 

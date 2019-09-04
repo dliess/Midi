@@ -10,13 +10,13 @@ namespace midi
 struct PortInfo
 {
     PortInfo(const rtmidiadapt::PortIndex& _portIndex,
-             const rtmidiadapt::DeviceOnPort& _deviceOnPort):
+             const rtmidiadapt::DeviceOnUsbPort& _deviceOnPort):
         portIndex(_portIndex),
         deviceOnPort(_deviceOnPort)
         {}
     bool operator<(const PortInfo& rhs) const { return deviceOnPort < rhs.deviceOnPort; }
     rtmidiadapt::PortIndex    portIndex;
-    rtmidiadapt::DeviceOnPort deviceOnPort;
+    rtmidiadapt::DeviceOnUsbPort deviceOnPort;
     struct Less
     {
         bool operator()(const PortInfo& lhs, const PortInfo& rhs) const
