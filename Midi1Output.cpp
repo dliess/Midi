@@ -47,9 +47,24 @@ bool Midi1Output::sysEx(const std::vector<uint8_t>& msg)
 bool Midi1Output::send(const MidiMessage& msg)
 {
     mpark::visit(overload{
-        [this](const MsgLayout<1>& msg) { send(msg); },
-        [this](const MsgLayout<2>& msg) { send(msg); },
-        [this](const MsgLayout<3>& msg) { send(msg); },
+        [this](const Message<NoteOn>& msg) { send(msg); },
+        [this](const Message<NoteOff>& msg) { send(msg); },
+        [this](const Message<AfterTouchPoly>& msg) { send(msg); },
+        [this](const Message<ControlChange>& msg) { send(msg); },
+        [this](const Message<ProgramChange>& msg) { send(msg); },
+        [this](const Message<AfterTouchChannel>& msg) { send(msg); },
+        [this](const Message<PitchBend>& msg) { send(msg); },
+        [this](const Message<TimeCodeQuarterFrame>& msg) { send(msg); },
+        [this](const Message<SongPosition>& msg) { send(msg); },
+        [this](const Message<SongSelect>& msg) { send(msg); },
+        [this](const Message<TuneRequest>& msg) { send(msg); },
+        [this](const Message<Clock>& msg) { send(msg); },
+        [this](const Message<Start>& msg) { send(msg); },
+        [this](const Message<Continue>& msg) { send(msg); },
+        [this](const Message<Stop>& msg) { send(msg); },
+        [this](const Message<ActiveSensing>& msg) { send(msg); },
+        [this](const Message<SystemReset>& msg) { send(msg); },
+
         [](auto&& other) { std::cerr << "INTERNAL ERROR, unknown midi message layout" << std::endl; }
     }, msg);
     return true;
