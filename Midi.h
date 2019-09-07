@@ -131,6 +131,8 @@ class MsgLayout<1>
 public:
 	inline uint8_t command() const { return m_command; }
 	inline std::string toString() const { return command2Str(command()); }
+	inline bool operator==(const MsgLayout<1>& rhs) const noexcept { return (m_command == rhs.m_command); }
+	inline bool operator!=(const MsgLayout<1>& rhs) const noexcept { return !operator==(rhs); }
 protected:
 	inline MsgLayout(uint8_t command) :
 			  m_command(command) {}
@@ -145,6 +147,9 @@ public:
 	inline uint8_t command() const { return m_command; }
 	inline uint8_t data1() const { return m_data1; }
 	inline std::string toString() const { return command2Str(command()).append(" ").append(std::to_string(data1())); }
+	inline bool operator==(const MsgLayout<2>& rhs) const noexcept { return (m_command == rhs.m_command) &&
+	                                                                        (m_data1 == rhs.m_data1); }
+	inline bool operator!=(const MsgLayout<2>& rhs) const noexcept { return !operator==(rhs); }
 protected:
 	inline MsgLayout(uint8_t command, uint8_t data1) :
 			  m_command(command),
@@ -168,6 +173,10 @@ public:
 	                                                                   .append(std::to_string(data1()))
 																	   .append(" ")
 																	   .append(std::to_string(data2())); }
+	inline bool operator==(const MsgLayout<3>& rhs) const noexcept { return (m_command == rhs.m_command) &&
+	                                                                        (m_data1 == rhs.m_data1) &&
+															                (m_data2 == rhs.m_data2); }
+	inline bool operator!=(const MsgLayout<3>& rhs) const noexcept { return !operator==(rhs); }
 protected:
 	inline MsgLayout(uint8_t command, uint8_t data1, uint8_t data2) :
 	          m_command(command),
