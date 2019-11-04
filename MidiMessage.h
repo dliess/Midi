@@ -200,6 +200,7 @@ public:
 };
 
 using MidiMessage = mpark::variant<
+	mpark::monostate,
  	Message<NoteOff>,
 	Message<NoteOn>,
 	Message<AfterTouchPoly>,
