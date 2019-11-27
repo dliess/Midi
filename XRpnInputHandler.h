@@ -2,6 +2,7 @@
 #define MIDI_XRPN_HANDLER_H
 
 #include "MidiMessage.h"
+#include <array>
 
 namespace midi
 {
