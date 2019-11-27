@@ -2,9 +2,10 @@
 #define MIDI_XRPN_HANDLER_H
 
 #include "MidiMessage.h"
+#include "XRpnCommon.h"
 #include <array>
 
-namespace midi
+namespace midi::xrpn
 {
 
 class XRpnInputHandler
@@ -22,16 +23,9 @@ public:
     MidiMessage handleMsg(const Message<ControlChange>& ccMsg) noexcept;
 
 private:
-    static constexpr int CC_ID_RPN_ID_MSB = 101;
-    static constexpr int CC_ID_RPN_ID_LSB = 100;
-    static constexpr int CC_ID_NRPN_ID_MSB = 99;
-    static constexpr int CC_ID_NRPN_ID_LSB = 98;
-    static constexpr int CC_ID_VALUE_MSB = 6;
-    static constexpr int CC_ID_VALUE_LSB = 38;
-
     std::array<MidiMessage, NUM_CHANNELS> m_activeXRpn;
 };
 
-} // namespace midi
+} // namespace midi::xrpn
 
 #endif

@@ -6,8 +6,10 @@
 using namespace midi;
 
 Midi1Output::Midi1Output(std::unique_ptr<IMidiOutMedium> pMedium) :
-    m_pMedium(std::move(pMedium))
-{}
+    m_pMedium(std::move(pMedium)),
+    m_xrpnOutputHandler([this](const Message<ControlChange>& msg){ send(msg); })
+{
+}
 
 IMidiOutMedium& Midi1Output::medium()
 {
@@ -64,6 +66,8 @@ bool Midi1Output::send(const MidiMessage& msg)
         [this](const Message<Stop>& msg) { send(msg); },
         [this](const Message<ActiveSensing>& msg) { send(msg); },
         [this](const Message<SystemReset>& msg) { send(msg); },
+        [this](const Message<RPN>& msg) { m_xrpnOutputHandler.send(msg); },
+        [this](const Message<NRPN>& msg) { m_xrpnOutputHandler.send(msg); },
 
         [](auto&& other) { std::cerr << "INTERNAL ERROR, unknown midi message layout" << std::endl; }
     }, msg);

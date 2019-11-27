@@ -1,6 +1,6 @@
 #include "XRpnInputHandler.h"
 
-midi::MidiMessage midi::XRpnInputHandler::handleMsg(const midi::Message<midi::ControlChange>& ccMsg) noexcept
+midi::MidiMessage midi::xrpn::XRpnInputHandler::handleMsg(const midi::Message<midi::ControlChange>& ccMsg) noexcept
 {
     const auto channelIdx = ccMsg.channel() - 1;
     bool shouldSend = false;

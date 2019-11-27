@@ -31,7 +31,7 @@ private:
     std::unique_ptr<IMidiInMedium> m_pMedium;
     IMidi1InputCallback*           m_pMidiInCb;
     std::vector<Callback>          m_callbacks;
-    XRpnInputHandler                    m_xrpnHandler;
+    xrpn::XRpnInputHandler         m_xrpnHandler;
     void processIncomingData(double timestamp, std::vector<uint8_t>& data);
 };
 
