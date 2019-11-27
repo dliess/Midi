@@ -201,11 +201,14 @@ public:
 
 struct RpnBase
 {
+	constexpr RpnBase(uint8_t channelNr) noexcept : channelNr(channelNr) {}
+	static constexpr uint8_t UNSET = 0xFF;
+	static constexpr uint8_t MAX = 127;
 	uint8_t channelNr;
-	uint8_t idMsb;
-	uint8_t idLsb;
-	uint8_t valueMsb;
-	uint8_t valueLsb;
+	uint8_t idMsb{UNSET};
+	uint8_t idLsb{UNSET};
+	uint8_t valueMsb{UNSET};
+	uint8_t valueLsb{UNSET};
 	std::string toString() const{
 		return std::string("ch:")
 				.append(std::to_string(channelNr))
@@ -218,10 +221,17 @@ struct RpnBase
 				.append(" ")
 				.append(std::to_string(valueLsb));
 	}
+	constexpr bool idIsValid() const noexcept{
+		return (idMsb != UNSET) && (idLsb != UNSET);
+	}
+	constexpr bool isCleared() const noexcept{
+		return (idMsb == MAX) && (idLsb == MAX);
+	}
 };
 template<>
 struct Message<RPN> : public RpnBase
 {
+	constexpr Message<RPN>(uint8_t channelNr) noexcept : RpnBase(channelNr) {}
 	std::string toString() const{
 		return std::string("RPN ") + RpnBase::toString();
 	}
@@ -230,6 +240,7 @@ struct Message<RPN> : public RpnBase
 template<>
 struct Message<NRPN> : public RpnBase
 {
+	constexpr Message<NRPN>(uint8_t channelNr) noexcept : RpnBase(channelNr) {}
 	std::string toString() const{
 		return std::string("NRPN ") + RpnBase::toString();
 	}
