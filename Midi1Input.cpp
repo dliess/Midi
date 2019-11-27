@@ -80,6 +80,13 @@ void Midi1Input::processIncomingData(double timestamp, std::vector<uint8_t>& dat
     	case ControlChange:
         {
             auto pEvent = reinterpret_cast<Message<ControlChange>*>(&data[0]);
+            if(XRpnHandler::isXRpnMsg(*pEvent))
+            {
+                auto xrpnMsg = m_xrpnHandler.handleMsg(*pEvent);
+                if(xrpnMsg.index() != mpark::variant_npos){
+                    for(auto &cb : m_callbacks) cb(*pEvent);
+                }
+            }
             for(auto &cb : m_callbacks) cb(*pEvent);
             if(m_pMidiInCb) m_pMidiInCb->onControlChange(timestamp, *pEvent);
             break;

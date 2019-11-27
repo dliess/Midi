@@ -83,8 +83,8 @@ class Message<ControlChange> : public VoiceMsgLayout<3>
 public:
 	Message(uint8_t channel, uint8_t controllerNumber, uint8_t controllerValue) :
 		VoiceMsgLayout<3>(Command<ControlChange>(channel), controllerNumber, controllerValue){}
-	uint8_t controllerNumber() const {return data1();}
-	uint8_t controllerValue() const {return data2();}
+	constexpr uint8_t controllerNumber() const {return data1();}
+	constexpr uint8_t controllerValue() const {return data2();}
 };
 
 template <>
@@ -199,6 +199,43 @@ public:
 		MsgLayout<1>(Command<SystemReset>()){}
 };
 
+struct RpnBase
+{
+	uint8_t channelNr;
+	uint8_t idMsb;
+	uint8_t idLsb;
+	uint8_t valueMsb;
+	uint8_t valueLsb;
+	std::string toString() const{
+		return std::string("ch:")
+				.append(std::to_string(channelNr))
+				.append(" ")
+				.append(std::to_string(idMsb))
+				.append(" ")
+				.append(std::to_string(idLsb))
+				.append(" ")
+				.append(std::to_string(valueMsb))
+				.append(" ")
+				.append(std::to_string(valueLsb));
+	}
+};
+template<>
+struct Message<RPN> : public RpnBase
+{
+	std::string toString() const{
+		return std::string("RPN ") + RpnBase::toString();
+	}
+};
+
+template<>
+struct Message<NRPN> : public RpnBase
+{
+	std::string toString() const{
+		return std::string("NRPN ") + RpnBase::toString();
+	}
+};
+
+
 using MidiMessage = mpark::variant<
 	mpark::monostate,
  	Message<NoteOff>,
@@ -217,7 +254,10 @@ using MidiMessage = mpark::variant<
 	Message<Continue>,
 	Message<Stop>,
 	Message<ActiveSensing>,
-	Message<SystemReset> >;
+	Message<SystemReset>,
+	Message<RPN>,
+	Message<NRPN>
+	>;
 
 template<class... Ts> struct overload : Ts... { using Ts::operator()...; };
 template<class... Ts> overload(Ts...) -> overload<Ts...>;

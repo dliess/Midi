@@ -6,6 +6,7 @@
 #include <functional>
 #include "IMidiInMedium.h"
 #include "MidiMessage.h"
+#include "XRpnHandler.h"
 //class IMidiInMedium;
 
 namespace midi
@@ -30,6 +31,7 @@ private:
     std::unique_ptr<IMidiInMedium> m_pMedium;
     IMidi1InputCallback*           m_pMidiInCb;
     std::vector<Callback>          m_callbacks;
+    XRpnHandler                    m_xrpnHandler;
     void processIncomingData(double timestamp, std::vector<uint8_t>& data);
 };
 

@@ -44,7 +44,9 @@ enum MsgType
 	Continue              = 0xFB,	///< System Real Time - Continue                     CIN: 0x0F
 	Stop                  = 0xFC,	///< System Real Time - Stop                         CIN: 0x0F
 	ActiveSensing         = 0xFE,	///< System Real Time - Active Sensing               CIN: 0x0F
-	SystemReset           = 0xFF	///< System Real Time - System Reset                 CIN: 0x0F
+	SystemReset           = 0xFF,	///< System Real Time - System Reset                 CIN: 0x0F
+	RPN                   = 0x0100,
+	NRPN                  = 0x0101
 };
 
 MsgType getMsgTypeFromCommand(uint8_t data);
@@ -73,6 +75,8 @@ std::string command2Str(uint8_t command)
 		case Stop                   : return "Stop";               
 		case ActiveSensing          : return "ActiveSensing";      
 		case SystemReset            : return "SysReset";
+		case RPN                    : return "RPN";
+		case NRPN                   : return "NRPN";
 		default                     : return "Unknown";       
 	}
 }
@@ -167,8 +171,8 @@ class MsgLayout<3>
 {
 public:
 	inline uint8_t command() const { return m_command; }
-	inline uint8_t data1() const { return m_data1; }
-	inline uint8_t data2() const { return m_data2; }
+	inline constexpr uint8_t data1() const { return m_data1; }
+	inline constexpr uint8_t data2() const { return m_data2; }
 	inline std::string toString() const { return command2Str(command()).append(" ")
 	                                                                   .append(std::to_string(data1()))
 																	   .append(" ")
