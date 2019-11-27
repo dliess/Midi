@@ -87,8 +87,11 @@ void Midi1Input::processIncomingData(double timestamp, std::vector<uint8_t>& dat
                     for(auto &cb : m_callbacks) cb(*pEvent);
                 }
             }
-            for(auto &cb : m_callbacks) cb(*pEvent);
-            if(m_pMidiInCb) m_pMidiInCb->onControlChange(timestamp, *pEvent);
+            else
+            {
+                for(auto &cb : m_callbacks) cb(*pEvent);
+                if(m_pMidiInCb) m_pMidiInCb->onControlChange(timestamp, *pEvent);                
+            }
             break;
         }
 		case ProgramChange:
