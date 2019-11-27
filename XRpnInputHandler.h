@@ -27,7 +27,6 @@ private:
     static constexpr int CC_ID_NRPN_ID_LSB = 98;
     static constexpr int CC_ID_VALUE_MSB = 6;
     static constexpr int CC_ID_VALUE_LSB = 38;
-    static constexpr uint8_t CLEAR = 127;
 
     std::array<MidiMessage, NUM_CHANNELS> m_activeXRpn;
 };
