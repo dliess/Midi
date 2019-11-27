@@ -6,7 +6,7 @@
 namespace midi
 {
 
-class XRpnHandler
+class XRpnInputHandler
 {
 public:
     static constexpr bool isXRpnMsg(const Message<ControlChange>& ccMsg) noexcept{

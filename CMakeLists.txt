@@ -7,7 +7,7 @@ add_subdirectory(MidiMedium)
 add_library(midi STATIC
     "Midi1Output.cpp"
     "Midi1Input.cpp"
-    "XRpnHandler.cpp"
+    "XRpnInputHandler.cpp"
 )
 
 target_include_directories(midi PUBLIC
