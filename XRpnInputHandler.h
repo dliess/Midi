@@ -23,8 +23,58 @@ public:
 
 private:
     std::array<MidiMessage, NUM_CHANNELS> m_activeXRpn;
+    template<typename XRPN_TYPE>
+    MidiMessage handle(const Message<ControlChange>& ccMsg) noexcept;
 };
 
 } // namespace midi::xrpn
+
+template<typename XRPN_TYPE>
+midi::MidiMessage midi::xrpn::XRpnInputHandler::handle(const Message<ControlChange>& ccMsg) noexcept
+{
+    const auto channelIdx = ccMsg.channel() - 1;
+    if(!mpark::holds_alternative<XRPN_TYPE>(m_activeXRpn[channelIdx])){
+        m_activeXRpn[channelIdx].emplace<XRPN_TYPE>(channelIdx);
+    }
+    auto& xrpn = mpark::get<XRPN_TYPE>(m_activeXRpn[channelIdx]);
+    switch(ccMsg.controllerNumber()){
+        case XRPN_TYPE::CC_ID_MSB:
+        {
+            xrpn.idMsb = ccMsg.controllerValue();
+            if(xrpn.isCleared()) m_activeXRpn[channelIdx].emplace<mpark::monostate>();
+            break;
+        }
+        case XRPN_TYPE::CC_ID_LSB:
+        {
+            xrpn.idLsb = ccMsg.controllerValue();
+            if(xrpn.isCleared()) m_activeXRpn[channelIdx].emplace<mpark::monostate>();
+            break;
+        }
+        case RpnBase::CC_ID_VALUE_MSB:
+        {
+            if(!xrpn.idIsValid()){
+                // TODO: log some error or throw exception
+                break;
+            }
+            xrpn.valueMsb = ccMsg.controllerValue();
+            xrpn.valueLsb = 0;
+            return xrpn;
+        }
+        case RpnBase::CC_ID_VALUE_LSB:
+        {
+            if(!xrpn.idIsValid() || xrpn.valueMsb == xrpn.UNSET ){
+                // TODO: log some error or throw exception
+                break;
+            }
+            xrpn.valueLsb = ccMsg.controllerValue();
+            return xrpn;
+        }
+        default:
+        {
+            break;
+        }
+    }
+    return MidiMessage();
+}
 
 #endif

@@ -3,155 +3,25 @@
 midi::MidiMessage midi::xrpn::XRpnInputHandler::handleMsg(const midi::Message<midi::ControlChange>& ccMsg) noexcept
 {
     const auto channelIdx = ccMsg.channel() - 1;
-    bool shouldSend = false;
-    mpark::visit(overload{
-            [this, channelIdx, &ccMsg](const mpark::monostate& empty) {
-                switch(ccMsg.controllerNumber()){
-                    case Message<RPN>::CC_ID_MSB:
-                    {
-                        m_activeXRpn[channelIdx].emplace<Message<RPN>>(ccMsg.channel());
-                        handleMsg(ccMsg);
-                        break;
-                    }
-                    case Message<RPN>::CC_ID_LSB:
-                    {
-                        break;
-                    }
-                    case Message<NRPN>::CC_ID_MSB:
-                    {
-                        m_activeXRpn[channelIdx].emplace<Message<NRPN>>(ccMsg.channel());
-                        handleMsg(ccMsg);
-                        break;
-                    }
-                    case Message<NRPN>::CC_ID_LSB:
-                    {
-                        break;
-                    }
-                    case RpnBase::CC_ID_VALUE_MSB:
-                    {
-                        break;
-                    }
-                    case RpnBase::CC_ID_VALUE_LSB:
-                    {
-                        break;
-                    }
-                    default:
-                    {
-                        break;
-                    }
-                }
-            },
-            [this, channelIdx, &ccMsg, &shouldSend](Message<RPN>& rpn) {
-                switch(ccMsg.controllerNumber()){
-                    case Message<RPN>::CC_ID_MSB:
-                    {
-                        rpn.idMsb = ccMsg.controllerValue();
-                        if(rpn.isCleared()) m_activeXRpn[channelIdx].emplace<mpark::monostate>();
-                        break;
-                    }
-                    case Message<RPN>::CC_ID_LSB:
-                    {
-                        rpn.idLsb = ccMsg.controllerValue();
-                        if(rpn.isCleared()) m_activeXRpn[channelIdx].emplace<mpark::monostate>();
-                        break;
-                    }
-                    case Message<NRPN>::CC_ID_MSB:
-                    {
-                        m_activeXRpn[channelIdx].emplace<Message<NRPN>>(ccMsg.channel());
-                        handleMsg(ccMsg);
-                        break;
-                    }
-                    case Message<NRPN>::CC_ID_LSB:
-                    {
-                        m_activeXRpn[channelIdx].emplace<Message<NRPN>>(ccMsg.channel());
-                        handleMsg(ccMsg);
-                        break;
-                    }
-                    case RpnBase::CC_ID_VALUE_MSB:
-                    {
-                        if(!rpn.idIsValid()){
-                            // TODO: log some error or throw exception
-                            break;
-                        }
-                        rpn.valueMsb = ccMsg.controllerValue();
-                        rpn.valueLsb = 0;
-                        shouldSend = true;
-                        break;
-                    }
-                    case RpnBase::CC_ID_VALUE_LSB:
-                    {
-                        if(!rpn.idIsValid()){
-                            // TODO: log some error or throw exception
-                            break;
-                        }
-                        rpn.valueLsb = ccMsg.controllerValue();
-                        shouldSend = true;
-                        break;
-                    }
-                    default:
-                    {
-                        break;
-                    }
-                }
-            },
-            [this, channelIdx, &ccMsg, &shouldSend](Message<NRPN>& nrpn) {
-                switch(ccMsg.controllerNumber()){
-                    case Message<RPN>::CC_ID_MSB:
-                    {
-                        m_activeXRpn[channelIdx].emplace<Message<RPN>>(ccMsg.channel());
-                        handleMsg(ccMsg);
-                        break;
-                    }
-                    case Message<RPN>::CC_ID_LSB:
-                    {
-                        m_activeXRpn[channelIdx].emplace<Message<RPN>>(ccMsg.channel());
-                        handleMsg(ccMsg);
-                        break;
-                    }
-                    case Message<NRPN>::CC_ID_MSB:
-                    {
-                        nrpn.idMsb = ccMsg.controllerValue();
-                        break;
-                    }
-                    case Message<NRPN>::CC_ID_LSB:
-                    {
-                        nrpn.idLsb = ccMsg.controllerValue();
-                        break;
-                    }
-                    case RpnBase::CC_ID_VALUE_MSB:
-                    {
-                        if(!nrpn.idIsValid()){
-                            // TODO: log some error or throw exception
-                            break;
-                        }
-                        nrpn.valueMsb = ccMsg.controllerValue();
-                        nrpn.valueLsb = 0;
-                        shouldSend = true;
-                        break;
-                    }
-                    case RpnBase::CC_ID_VALUE_LSB:
-                    {
-                        if(!nrpn.idIsValid()){
-                            // TODO: log some error or throw exception
-                            break;
-                        }
-                        nrpn.valueLsb = ccMsg.controllerValue();
-                        shouldSend = true;
-                        break;
-                    }
-                    default:
-                    {
-                        break;
-                    }
-                }
-            },
-            [](auto&& all){}
-        },
-        m_activeXRpn[channelIdx]
-    );
-    if(shouldSend)
-    {
-        return m_activeXRpn[channelIdx];
+    switch(ccMsg.controllerNumber()){
+        case Message<RPN>::CC_ID_MSB: [[falltrough]];
+        case Message<RPN>::CC_ID_LSB: return handle<Message<RPN>>(ccMsg); 
+        case Message<NRPN>::CC_ID_MSB: [[falltrough]];
+        case Message<NRPN>::CC_ID_LSB: return handle<Message<NRPN>>(ccMsg);
+        case RpnBase::CC_ID_VALUE_MSB: [[falltrough]];
+        case RpnBase::CC_ID_VALUE_LSB:
+        {
+            MidiMessage ret;
+            mpark::visit(overload{
+                [](const mpark::monostate& empty) {},
+                [this, &ret, &ccMsg](Message<RPN>& rpn)  { ret = handle<Message<RPN>>(ccMsg); },
+                [this, &ret, &ccMsg](Message<NRPN>& nrpn) {ret = handle<Message<NRPN>>(ccMsg); },
+                [](auto&& all){}
+                },m_activeXRpn[channelIdx]
+            );
+            return ret;
+        }
+        default: break;
     }
-    return mpark::monostate{};
+    return MidiMessage();
 }
