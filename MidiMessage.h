@@ -204,6 +204,10 @@ struct RpnBase
 	constexpr RpnBase(uint8_t channelNr) noexcept : channelNr(channelNr) {}
 	static constexpr uint8_t UNSET = 0xFF;
 	static constexpr uint8_t MAX = 127;
+	static constexpr int CC_ID_VALUE_MSB = 6;
+	static constexpr int CC_ID_VALUE_LSB = 38;
+	static constexpr uint8_t NULL_VALUE = 127;
+
 	uint8_t channelNr;
 	uint8_t idMsb{UNSET};
 	uint8_t idLsb{UNSET};
@@ -235,6 +239,8 @@ struct Message<RPN> : public RpnBase
 	std::string toString() const{
 		return std::string("RPN ") + RpnBase::toString();
 	}
+	static constexpr int CC_ID_MSB = 101;
+	static constexpr int CC_ID_LSB = 100;
 };
 
 template<>
@@ -244,6 +250,8 @@ struct Message<NRPN> : public RpnBase
 	std::string toString() const{
 		return std::string("NRPN ") + RpnBase::toString();
 	}
+	static constexpr int CC_ID_MSB = 99;
+	static constexpr int CC_ID_LSB = 98;
 };
 
 

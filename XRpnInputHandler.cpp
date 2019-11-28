@@ -7,31 +7,31 @@ midi::MidiMessage midi::xrpn::XRpnInputHandler::handleMsg(const midi::Message<mi
     mpark::visit(overload{
             [this, channelIdx, &ccMsg](const mpark::monostate& empty) {
                 switch(ccMsg.controllerNumber()){
-                    case CC_ID_RPN_ID_MSB:
+                    case Message<RPN>::CC_ID_MSB:
                     {
                         m_activeXRpn[channelIdx].emplace<Message<RPN>>(ccMsg.channel());
                         handleMsg(ccMsg);
                         break;
                     }
-                    case CC_ID_RPN_ID_LSB:
+                    case Message<RPN>::CC_ID_LSB:
                     {
                         break;
                     }
-                    case CC_ID_NRPN_ID_MSB:
+                    case Message<NRPN>::CC_ID_MSB:
                     {
                         m_activeXRpn[channelIdx].emplace<Message<NRPN>>(ccMsg.channel());
                         handleMsg(ccMsg);
                         break;
                     }
-                    case CC_ID_NRPN_ID_LSB:
+                    case Message<NRPN>::CC_ID_LSB:
                     {
                         break;
                     }
-                    case CC_ID_VALUE_MSB:
+                    case RpnBase::CC_ID_VALUE_MSB:
                     {
                         break;
                     }
-                    case CC_ID_VALUE_LSB:
+                    case RpnBase::CC_ID_VALUE_LSB:
                     {
                         break;
                     }
@@ -43,31 +43,31 @@ midi::MidiMessage midi::xrpn::XRpnInputHandler::handleMsg(const midi::Message<mi
             },
             [this, channelIdx, &ccMsg, &shouldSend](Message<RPN>& rpn) {
                 switch(ccMsg.controllerNumber()){
-                    case CC_ID_RPN_ID_MSB:
+                    case Message<RPN>::CC_ID_MSB:
                     {
                         rpn.idMsb = ccMsg.controllerValue();
                         if(rpn.isCleared()) m_activeXRpn[channelIdx].emplace<mpark::monostate>();
                         break;
                     }
-                    case CC_ID_RPN_ID_LSB:
+                    case Message<RPN>::CC_ID_LSB:
                     {
                         rpn.idLsb = ccMsg.controllerValue();
                         if(rpn.isCleared()) m_activeXRpn[channelIdx].emplace<mpark::monostate>();
                         break;
                     }
-                    case CC_ID_NRPN_ID_MSB:
+                    case Message<NRPN>::CC_ID_MSB:
                     {
                         m_activeXRpn[channelIdx].emplace<Message<NRPN>>(ccMsg.channel());
                         handleMsg(ccMsg);
                         break;
                     }
-                    case CC_ID_NRPN_ID_LSB:
+                    case Message<NRPN>::CC_ID_LSB:
                     {
                         m_activeXRpn[channelIdx].emplace<Message<NRPN>>(ccMsg.channel());
                         handleMsg(ccMsg);
                         break;
                     }
-                    case CC_ID_VALUE_MSB:
+                    case RpnBase::CC_ID_VALUE_MSB:
                     {
                         if(!rpn.idIsValid()){
                             // TODO: log some error or throw exception
@@ -78,7 +78,7 @@ midi::MidiMessage midi::xrpn::XRpnInputHandler::handleMsg(const midi::Message<mi
                         shouldSend = true;
                         break;
                     }
-                    case CC_ID_VALUE_LSB:
+                    case RpnBase::CC_ID_VALUE_LSB:
                     {
                         if(!rpn.idIsValid()){
                             // TODO: log some error or throw exception
@@ -96,29 +96,29 @@ midi::MidiMessage midi::xrpn::XRpnInputHandler::handleMsg(const midi::Message<mi
             },
             [this, channelIdx, &ccMsg, &shouldSend](Message<NRPN>& nrpn) {
                 switch(ccMsg.controllerNumber()){
-                    case CC_ID_RPN_ID_MSB:
+                    case Message<RPN>::CC_ID_MSB:
                     {
                         m_activeXRpn[channelIdx].emplace<Message<RPN>>(ccMsg.channel());
                         handleMsg(ccMsg);
                         break;
                     }
-                    case CC_ID_RPN_ID_LSB:
+                    case Message<RPN>::CC_ID_LSB:
                     {
                         m_activeXRpn[channelIdx].emplace<Message<RPN>>(ccMsg.channel());
                         handleMsg(ccMsg);
                         break;
                     }
-                    case CC_ID_NRPN_ID_MSB:
+                    case Message<NRPN>::CC_ID_MSB:
                     {
                         nrpn.idMsb = ccMsg.controllerValue();
                         break;
                     }
-                    case CC_ID_NRPN_ID_LSB:
+                    case Message<NRPN>::CC_ID_LSB:
                     {
                         nrpn.idLsb = ccMsg.controllerValue();
                         break;
                     }
-                    case CC_ID_VALUE_MSB:
+                    case RpnBase::CC_ID_VALUE_MSB:
                     {
                         if(!nrpn.idIsValid()){
                             // TODO: log some error or throw exception
@@ -129,7 +129,7 @@ midi::MidiMessage midi::xrpn::XRpnInputHandler::handleMsg(const midi::Message<mi
                         shouldSend = true;
                         break;
                     }
-                    case CC_ID_VALUE_LSB:
+                    case RpnBase::CC_ID_VALUE_LSB:
                     {
                         if(!nrpn.idIsValid()){
                             // TODO: log some error or throw exception
