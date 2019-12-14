@@ -17,7 +17,7 @@ target_include_directories(usbmidi PUBLIC
 
 target_link_libraries(usbmidi PUBLIC usbMidiPortHandling rtmidi)
 
-set(RtMidiApi "RtMidi::UNIX_JACK" CACHE STRING "Midi-API")
+set(RtMidiApi "RtMidi::LINUX_ALSA" CACHE STRING "Midi-API")
 set_property(CACHE RtMidiApi PROPERTY STRINGS "RtMidi::UNIX_JACK" "RtMidi::LINUX_ALSA")
 message(STATUS "RtMidiApi='${RtMidiApi}'")
 target_compile_definitions(usbmidi PUBLIC __RTMIDI_API__=${RtMidiApi})
