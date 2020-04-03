@@ -85,6 +85,7 @@ public:
 		VoiceMsgLayout<3>(Command<ControlChange>(channel), controllerNumber, controllerValue){}
 	constexpr uint8_t controllerNumber() const {return data1();}
 	constexpr uint8_t controllerValue() const {return data2();}
+	constexpr float getRelativeValue() const noexcept { return controllerValue() / 128.0f; }
 };
 
 template <>
