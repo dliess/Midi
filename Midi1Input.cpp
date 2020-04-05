@@ -84,13 +84,22 @@ void Midi1Input::processIncomingData(double timestamp, std::vector<uint8_t>& dat
             {
                 auto xrpnMsg = m_xrpnHandler.handleMsg(*pEvent);
                 if(xrpnMsg.index() != mpark::variant_npos){
-                    for(auto &cb : m_callbacks) cb(*pEvent);
+                    for(auto &cb : m_callbacks) cb(xrpnMsg);
                 }
             }
             else
             {
-                for(auto &cb : m_callbacks) cb(*pEvent);
-                if(m_pMidiInCb) m_pMidiInCb->onControlChange(timestamp, *pEvent);                
+                const auto ret = m_ccInputHandler.handleIncomingCCMsg(*pEvent);
+                mpark::visit(midi::overload{
+                    [this, &timestamp](const Message<ControlChange>& cc){
+                        for(auto &cb : m_callbacks) cb(cc);
+                        if(m_pMidiInCb) m_pMidiInCb->onControlChange(timestamp, cc);                
+                    },
+                    [this](const Message<ControlChangeHighRes>& cchr){
+                        for(auto &cb : m_callbacks) cb(cchr);
+                    },
+                    [](auto&& rest) {}
+                }, ret);
             }
             break;
         }

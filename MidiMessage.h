@@ -3,6 +3,7 @@
 
 #include "Midi.h"
 #include "mpark/variant.hpp"
+#include <fmt/format.h>
 
 namespace midi
 {
@@ -28,7 +29,7 @@ template <>
 class VoiceMsgLayout<3> : public MsgLayout<3>
 {
 public:
-	uint8_t channel() const { return getChannelFromVoiceCommand( command() ); }
+	constexpr uint8_t channel() const { return getChannelFromVoiceCommand( command() ); }
 	std::string toString() const { return command2Str(command()).append(" ch:")
 																.append(std::to_string(channel()))
 																.append(" ")
@@ -85,7 +86,8 @@ public:
 		VoiceMsgLayout<3>(Command<ControlChange>(channel), controllerNumber, controllerValue){}
 	constexpr uint8_t controllerNumber() const {return data1();}
 	constexpr uint8_t controllerValue() const {return data2();}
-	constexpr float getRelativeValue() const noexcept { return controllerValue() / 128.0f; }
+	static constexpr int RES_MAX = (1 << 7);
+	constexpr float getRelativeValue() const noexcept { return controllerValue() / float(RES_MAX); }
 };
 
 template <>
@@ -255,6 +257,48 @@ struct Message<NRPN> : public RpnBase
 	static constexpr int CC_ID_LSB = 98;
 };
 
+template<>
+struct Message<ControlChangeHighRes>
+{
+	uint8_t channelId;
+	uint8_t msbCCId;
+	uint8_t lsbCCId;
+	uint8_t msbValue;
+	uint8_t lsbValue;
+
+	static constexpr int RES_MAX = 1 << 14;
+
+	constexpr Message(uint8_t channelId, uint8_t msbId, uint8_t lsbId, float relValue) noexcept :
+		channelId(channelId),
+		msbCCId(msbId),
+		lsbCCId(lsbId),
+		msbValue(int(relValue * RES_MAX) >> 7),
+		lsbValue(int(relValue * RES_MAX) & 0x7F)
+	{}
+
+	constexpr Message(const Message<ControlChange>& msb,
+	                  const Message<ControlChange>& lsb) noexcept :
+		channelId(msb.channel()),
+		msbCCId(msb.controllerNumber()),
+		lsbCCId(lsb.controllerNumber()),
+		msbValue(msb.controllerValue()),
+		lsbValue(lsb.controllerValue())
+	{}
+
+	constexpr float getRelativeValue() const noexcept {
+		return ((msbValue << 7) + lsbValue)  / float(RES_MAX);
+	}
+	constexpr uint8_t controllerNumber() const noexcept{return msbCCId;}
+
+	std::pair<Message<ControlChange>, Message<ControlChange>> toCCPair() const noexcept{
+		return std::make_pair(Message<ControlChange>(channelId, msbCCId, msbValue),
+		                      Message<ControlChange>(channelId, lsbCCId, lsbValue));		
+	}
+
+	std::string toString() const noexcept{
+		return fmt::format("ch:{0} [{1},{2}] [{3},{4}]", channelId, msbCCId, lsbCCId, msbValue, lsbValue);
+	}
+};
 
 using MidiMessage = mpark::variant<
 	mpark::monostate,
@@ -276,7 +320,8 @@ using MidiMessage = mpark::variant<
 	Message<ActiveSensing>,
 	Message<SystemReset>,
 	Message<RPN>,
-	Message<NRPN>
+	Message<NRPN>,
+	Message<ControlChangeHighRes>
 	>;
 
 template<class... Ts> struct overload : Ts... { using Ts::operator()...; };

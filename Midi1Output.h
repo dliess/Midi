@@ -4,6 +4,7 @@
 #include "IMidiOutMedium.h"
 #include "MidiMessage.h"
 #include "XRpnOutputHandler.h"
+#include "MidiCCHighResOutputHandler.h"
 #include "Midi.h"
 #include <memory>
 #include <vector>
@@ -27,6 +28,7 @@ public:
 private:
     std::unique_ptr<IMidiOutMedium> m_pMedium;
     xrpn::XRpnOutputHandler         m_xrpnOutputHandler;
+    CCHighResOutputHandler          m_CCHighResOutputHandler;
     bool send(const MsgLayout<1>& midiMessage);
     bool send(const MsgLayout<2>& midiMessage);
     bool send(const MsgLayout<3>& midiMessage);

@@ -7,6 +7,7 @@ add_subdirectory(MidiMedium)
 add_library(midi STATIC
     "Midi1Output.cpp"
     "Midi1Input.cpp"
+    "MidiCCInputHandler.cpp"
     "XRpnInputHandler.cpp"
     "XRpnOutputHandler.cpp"
 )
@@ -16,4 +17,7 @@ target_include_directories(midi PUBLIC
     $<TARGET_PROPERTY:midimedium,INTERFACE_INCLUDE_DIRECTORIES>
 )
 
-target_link_libraries(midi mpark_variant)
+target_link_libraries(midi
+    PUBLIC mpark_variant
+    PUBLIC fmt
+)

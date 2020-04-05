@@ -46,7 +46,8 @@ enum MsgType
 	ActiveSensing         = 0xFE,	///< System Real Time - Active Sensing               CIN: 0x0F
 	SystemReset           = 0xFF,	///< System Real Time - System Reset                 CIN: 0x0F
 	RPN                   = 0x0100,
-	NRPN                  = 0x0101
+	NRPN                  = 0x0101,
+	ControlChangeHighRes  = 0x0110
 };
 
 MsgType getMsgTypeFromCommand(uint8_t data);
@@ -77,6 +78,7 @@ std::string command2Str(uint8_t command)
 		case SystemReset            : return "SysReset";
 		case RPN                    : return "RPN";
 		case NRPN                   : return "NRPN";
+		case ControlChangeHighRes   : return "CCHighRes";
 		default                     : return "Unknown";       
 	}
 }
@@ -170,7 +172,7 @@ template <>
 class MsgLayout<3>
 {
 public:
-	inline uint8_t command() const { return m_command; }
+	inline constexpr uint8_t command() const { return m_command; }
 	inline constexpr uint8_t data1() const { return m_data1; }
 	inline constexpr uint8_t data2() const { return m_data2; }
 	inline std::string toString() const { return command2Str(command()).append(" ")
@@ -263,7 +265,7 @@ inline MsgType getMsgTypeFromCommand(uint8_t data)
 	return static_cast<MsgType>(data);
 }
 
-inline uint8_t getChannelFromVoiceCommand(uint8_t voiceCommand)
+inline constexpr uint8_t getChannelFromVoiceCommand(uint8_t voiceCommand)
 {
    return (voiceCommand & 0x0F) + 1;
 }
