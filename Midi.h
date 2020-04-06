@@ -7,12 +7,12 @@
 namespace midi
 {
 
-static const uint32_t BAUDRATE         = 31250;
-static const uint32_t CHANNEL_OMNI     = 0;
-static const uint32_t CHANNEL_MAX      = 16;
-static const uint32_t NUM_CHANNELS     = 16;
-static const uint32_t MAX_SERIAL_SYSEX_SIZE = 255;  // Maximum size is 65535 bytes.
-static const uint32_t MAX_USB_SYSEX_SIZE = 64;
+static constexpr uint32_t BAUDRATE         = 31250;
+static constexpr uint32_t CHANNEL_OMNI     = 0;
+static constexpr uint32_t CHANNEL_MAX      = 16;
+static constexpr uint32_t NUM_CHANNELS     = 16;
+static constexpr uint32_t MAX_SERIAL_SYSEX_SIZE = 255;  // Maximum size is 65535 bytes.
+static constexpr uint32_t MAX_USB_SYSEX_SIZE = 64;
 
 
 /*! Enumeration of MIDI types

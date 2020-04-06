@@ -19,6 +19,7 @@ class Midi1Input
 {
 public:
     Midi1Input(std::unique_ptr<IMidiInMedium> pMedium);
+    bool setCCHighResPair(int msbId, int lsbId) noexcept;
     IMidiInMedium& medium();
     const IMidiInMedium& medium() const;
     using Callback = std::function<void(const MidiMessage&)>;

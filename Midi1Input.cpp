@@ -14,6 +14,11 @@ Midi1Input::Midi1Input(std::unique_ptr<IMidiInMedium> pMedium) :
     });
 }
 
+bool Midi1Input::setCCHighResPair(int msbId, int lsbId) noexcept
+{
+    return m_ccInputHandler.setPair(msbId, lsbId);
+}
+
 IMidiInMedium& Midi1Input::medium()
 {
     return *m_pMedium;

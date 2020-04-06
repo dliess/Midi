@@ -4,11 +4,11 @@ midi::MidiMessage midi::xrpn::XRpnInputHandler::handleMsg(const midi::Message<mi
 {
     const auto channelIdx = ccMsg.channel() - 1;
     switch(ccMsg.controllerNumber()){
-        case Message<RPN>::CC_ID_MSB: [[falltrough]];
+        case Message<RPN>::CC_ID_MSB: [[fallthrough]];
         case Message<RPN>::CC_ID_LSB: return handle<Message<RPN>>(ccMsg); 
-        case Message<NRPN>::CC_ID_MSB: [[falltrough]];
+        case Message<NRPN>::CC_ID_MSB: [[fallthrough]];
         case Message<NRPN>::CC_ID_LSB: return handle<Message<NRPN>>(ccMsg);
-        case RpnBase::CC_ID_VALUE_MSB: [[falltrough]];
+        case RpnBase::CC_ID_VALUE_MSB: [[fallthrough]];
         case RpnBase::CC_ID_VALUE_LSB:
         {
             MidiMessage ret;
