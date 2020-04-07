@@ -15,18 +15,18 @@ template<>
 class VoiceMsgLayout<2> : public MsgLayout<2>
 {
 public:
-   uint8_t channel() const { return getChannelFromVoiceCommand(command()); }
-   std::string toString() const
+   constexpr uint8_t channel() const noexcept
    {
-      return command2Str(command())
-         .append(" ch:")
-         .append(std::to_string(channel()))
-         .append(" ")
-         .append(std::to_string(data1()));
+      return getChannelFromVoiceCommand(command());
+   }
+   std::string toString() const noexcept
+   {
+      return fmt::format("{0} ch:{1} {2}", command2Str(command()), channel(),
+                         data1());
    }
 
 protected:
-   inline VoiceMsgLayout(uint8_t command, uint8_t data1) :
+   inline constexpr VoiceMsgLayout(uint8_t command, uint8_t data1) noexcept :
       MsgLayout<2>(command, data1)
    {
    }
@@ -36,23 +36,19 @@ template<>
 class VoiceMsgLayout<3> : public MsgLayout<3>
 {
 public:
-   constexpr uint8_t channel() const
+   constexpr uint8_t channel() const noexcept
    {
       return getChannelFromVoiceCommand(command());
    }
-   std::string toString() const
+   std::string toString() const noexcept
    {
-      return command2Str(command())
-         .append(" ch:")
-         .append(std::to_string(channel()))
-         .append(" ")
-         .append(std::to_string(data1()))
-         .append(" ")
-         .append(std::to_string(data2()));
+      return fmt::format("{0} ch:{1} {2} {3}", command2Str(command()),
+                         channel(), data1(), data2());
    }
 
 protected:
-   inline VoiceMsgLayout(uint8_t command, uint8_t data1, uint8_t data2) :
+   inline constexpr VoiceMsgLayout(uint8_t command, uint8_t data1,
+                                   uint8_t data2) noexcept :
       MsgLayout<3>(command, data1, data2)
    {
    }
@@ -72,36 +68,47 @@ template<>
 class Message<NoteOff> : public VoiceMsgLayout<3>
 {
 public:
-   Message(uint8_t channel, uint8_t noteNumber, uint8_t velocity) :
+   constexpr Message(uint8_t channel, uint8_t noteNumber,
+                     uint8_t velocity) noexcept :
       VoiceMsgLayout<3>(Command<NoteOff>(channel), noteNumber, velocity)
    {
    }
-   uint8_t noteNumber() const { return data1(); }
-   uint8_t velocity() const { return data2(); }
+   constexpr uint8_t noteNumber() const noexcept { return data1(); }
+   constexpr uint8_t velocity() const noexcept { return data2(); }
+   constexpr float relativeVelocity() const noexcept
+   {
+      return velocity() / float(1 << 7);
+   }
 };
 
 template<>
 class Message<NoteOn> : public VoiceMsgLayout<3>
 {
 public:
-   Message(uint8_t channel, uint8_t noteNumber, uint8_t velocity) :
+   constexpr Message(uint8_t channel, uint8_t noteNumber,
+                     uint8_t velocity) noexcept :
       VoiceMsgLayout<3>(Command<NoteOn>(channel), noteNumber, velocity)
    {
    }
-   uint8_t noteNumber() const { return data1(); }
-   uint8_t velocity() const { return data2(); }
+   constexpr uint8_t noteNumber() const noexcept { return data1(); }
+   constexpr uint8_t velocity() const noexcept { return data2(); }
+   constexpr float relativeVelocity() const noexcept
+   {
+      return velocity() / float(1 << 7);
+   }
 };
 
 template<>
 class Message<AfterTouchPoly> : public VoiceMsgLayout<3>
 {
 public:
-   Message(uint8_t channel, uint8_t noteNumber, uint8_t pressure) :
+   constexpr Message(uint8_t channel, uint8_t noteNumber,
+                     uint8_t pressure) noexcept :
       VoiceMsgLayout<3>(Command<AfterTouchPoly>(channel), noteNumber, pressure)
    {
    }
-   uint8_t noteNumber() const { return data1(); }
-   uint8_t pressure() const { return data2(); }
+   constexpr uint8_t noteNumber() const noexcept { return data1(); }
+   constexpr uint8_t pressure() const noexcept { return data2(); }
 };
 
 template<>
@@ -110,18 +117,20 @@ class Message<ControlChange> : public VoiceMsgLayout<3>
 public:
    static constexpr int RES_MAX = (1 << 7);
 
-   Message(uint8_t channel, uint8_t controllerNumber, uint8_t controllerValue) :
+   constexpr Message(uint8_t channel, uint8_t controllerNumber,
+                     uint8_t controllerValue) noexcept :
       VoiceMsgLayout<3>(Command<ControlChange>(channel), controllerNumber,
                         controllerValue)
    {
    }
-   Message(uint8_t channel, uint8_t controllerNumber, float controllerValue) :
+   constexpr Message(uint8_t channel, uint8_t controllerNumber,
+                     float controllerValue) noexcept :
       VoiceMsgLayout<3>(Command<ControlChange>(channel), controllerNumber,
                         controllerValue * RES_MAX)
    {
    }
-   constexpr uint8_t controllerNumber() const { return data1(); }
-   constexpr uint8_t controllerValue() const { return data2(); }
+   constexpr uint8_t controllerNumber() const noexcept { return data1(); }
+   constexpr uint8_t controllerValue() const noexcept { return data2(); }
    constexpr float getRelativeValue() const noexcept
    {
       return controllerValue() / float(RES_MAX);
@@ -132,38 +141,46 @@ template<>
 class Message<ProgramChange> : public VoiceMsgLayout<2>
 {
 public:
-   Message(uint8_t channel, uint8_t programNumber) :
+   constexpr Message(uint8_t channel, uint8_t programNumber) noexcept :
       VoiceMsgLayout<2>(Command<ProgramChange>(channel), programNumber)
    {
    }
-   uint8_t programNumber() const { return data1(); }
+   constexpr uint8_t programNumber() const noexcept { return data1(); }
 };
 
 template<>
 class Message<AfterTouchChannel> : public VoiceMsgLayout<2>
 {
 public:
-   Message(uint8_t channel, uint8_t value) :
+   constexpr Message(uint8_t channel, uint8_t value) noexcept :
       VoiceMsgLayout<2>(Command<AfterTouchChannel>(channel), value)
    {
    }
-   uint8_t value() const { return data1(); }
+   constexpr uint8_t value() const noexcept { return data1(); }
+   constexpr float relativeValue() const noexcept
+   {
+      return value() / float(1 << 7);
+   }
 };
 
 template<>
 class Message<PitchBend> : public VoiceMsgLayout<3>
 {
 public:
-   Message(uint8_t channel, int16_t value) :
+   constexpr Message(uint8_t channel, int16_t value) noexcept :
       VoiceMsgLayout<3>(Command<PitchBend>(channel), (value + 0x2000) & 0x7F,
                         ((value + 0x2000) >> 7) & 0x7F)
    {
    }
-   int16_t value() const
+   constexpr int16_t value() const noexcept
    {
       return (static_cast<uint16_t>(data1()) |
               (static_cast<uint16_t>(data2()) << 7)) -
              0x2000;
+   }
+   constexpr float relativeValue() const noexcept
+   {
+      return value() / float(1 << 7);
    }
 };
 
@@ -171,26 +188,27 @@ template<>
 class Message<TimeCodeQuarterFrame> : public MsgLayout<2>
 {
 public:
-   Message(uint8_t data) : MsgLayout<2>(Command<TimeCodeQuarterFrame>(), data)
+   constexpr Message(uint8_t data) noexcept :
+      MsgLayout<2>(Command<TimeCodeQuarterFrame>(), data)
    {
    }
-   Message(uint8_t nibbleType, uint8_t nibbleValue) :
+   constexpr Message(uint8_t nibbleType, uint8_t nibbleValue) noexcept :
       MsgLayout<2>(Command<TimeCodeQuarterFrame>(),
                    ((nibbleType & 0x07) << 4) | (nibbleValue & 0x0F))
    {
    }
-   uint8_t value() const { return data1(); }
+   constexpr uint8_t value() const noexcept { return data1(); }
 };
 
 template<>
 class Message<SongPosition> : public MsgLayout<3>
 {
 public:
-   Message(uint16_t beats) :
+   constexpr Message(uint16_t beats) noexcept :
       MsgLayout<3>(Command<SongPosition>(), beats & 0x7F, (beats >> 7) & 0x7F)
    {
    }
-   uint16_t beats() const
+   constexpr uint16_t beats() const noexcept
    {
       return static_cast<uint16_t>(data1()) |
              (static_cast<uint16_t>(data2()) << 7);
@@ -201,57 +219,57 @@ template<>
 class Message<SongSelect> : public MsgLayout<2>
 {
 public:
-   Message(uint8_t song) : MsgLayout<2>(Command<SongSelect>(), song) {}
-   uint8_t song() const { return data1(); }
+   constexpr Message(uint8_t song) noexcept : MsgLayout<2>(Command<SongSelect>(), song) {}
+   constexpr uint8_t song() const noexcept { return data1(); }
 };
 
 template<>
 class Message<TuneRequest> : public MsgLayout<1>
 {
 public:
-   Message() : MsgLayout<1>(Command<TuneRequest>()) {}
+   constexpr Message() noexcept : MsgLayout<1>(Command<TuneRequest>()) {}
 };
 
 template<>
 class Message<Clock> : public MsgLayout<1>
 {
 public:
-   Message() : MsgLayout<1>(Command<Clock>()) {}
+   constexpr Message() noexcept : MsgLayout<1>(Command<Clock>()) {}
 };
 
 template<>
 class Message<Start> : public MsgLayout<1>
 {
 public:
-   Message() : MsgLayout<1>(Command<Start>()) {}
+   constexpr Message() noexcept : MsgLayout<1>(Command<Start>()) {}
 };
 
 template<>
 class Message<Continue> : public MsgLayout<1>
 {
 public:
-   Message() : MsgLayout<1>(Command<Continue>()) {}
+   constexpr Message() noexcept : MsgLayout<1>(Command<Continue>()) {}
 };
 
 template<>
 class Message<Stop> : public MsgLayout<1>
 {
 public:
-   Message() : MsgLayout<1>(Command<Stop>()) {}
+   constexpr Message() noexcept : MsgLayout<1>(Command<Stop>()) {}
 };
 
 template<>
 class Message<ActiveSensing> : public MsgLayout<1>
 {
 public:
-   Message() : MsgLayout<1>(Command<ActiveSensing>()) {}
+   constexpr Message() noexcept : MsgLayout<1>(Command<ActiveSensing>()) {}
 };
 
 template<>
 class Message<SystemReset> : public MsgLayout<1>
 {
 public:
-   Message() : MsgLayout<1>(Command<SystemReset>()) {}
+   constexpr Message() noexcept : MsgLayout<1>(Command<SystemReset>()) {}
 };
 
 struct RpnBase
@@ -280,10 +298,9 @@ struct RpnBase
    uint8_t valueMsb{UNSET};
    uint8_t valueLsb{UNSET};
 
+   constexpr uint8_t channel() const noexcept { return channelNr; }
 
-   constexpr uint8_t channel() const { return channelNr; }
-
-   std::string toString() const
+   std::string toString() const noexcept
    {
       return fmt::format("ch:{0} [{1},{2}] [{3},{4}]", channelNr, idMsb, idLsb,
                          valueMsb, valueLsb);
@@ -311,7 +328,7 @@ struct Message<RPN> : public RpnBase
    {
    }
 
-   std::string toString() const
+   std::string toString() const noexcept
    {
       return std::string("RPN ") + RpnBase::toString();
    }
@@ -325,11 +342,11 @@ struct Message<NRPN> : public RpnBase
 {
    constexpr Message<NRPN>(uint8_t channelNr) noexcept : RpnBase(channelNr) {}
    constexpr Message<NRPN>(uint8_t channelNr, int idMsb, int idLsb,
-                          float value) noexcept :
+                           float value) noexcept :
       RpnBase(channelNr, idMsb, idLsb, value)
    {
    }
-   std::string toString() const
+   std::string toString() const noexcept
    {
       return std::string("NRPN ") + RpnBase::toString();
    }
@@ -365,7 +382,12 @@ struct Message<ControlChangeHighRes>
    {
    }
 
-   constexpr uint8_t channel() const { return channelId; }
+   constexpr uint8_t channel() const noexcept { return channelId; }
+
+   constexpr uint8_t controllerValue() const noexcept
+   {
+      return (msbValue << 7) + lsbValue;
+   }
 
    constexpr float getRelativeValue() const noexcept
    {

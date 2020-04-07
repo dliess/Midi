@@ -4,6 +4,9 @@
 #include <cstdint>
 #include <string>
 
+#include <fmt/format.h>
+
+
 namespace midi
 {
 
@@ -50,10 +53,10 @@ enum MsgType
 	ControlChangeHighRes  = 0x0110
 };
 
-MsgType getMsgTypeFromCommand(uint8_t data);
+constexpr MsgType getMsgTypeFromCommand(uint8_t data) noexcept;
 
-inline
-std::string command2Str(uint8_t command)
+inline constexpr
+std::string_view command2Str(uint8_t command) noexcept
 {
 	switch(getMsgTypeFromCommand(command))
 	{
@@ -83,12 +86,12 @@ std::string command2Str(uint8_t command)
 	}
 }
 
-inline bool isCommand(uint8_t data)
+inline constexpr bool isCommand(uint8_t data) noexcept
 {
    return data & 0x80;
 }
 
-inline bool isVoiceCommand(uint8_t data)
+inline constexpr bool isVoiceCommand(uint8_t data) noexcept
 {
    return isCommand(data) && (data < SystemExclusive);
 }
@@ -96,38 +99,38 @@ inline bool isVoiceCommand(uint8_t data)
 class CommandBase
 {
 public:
-	 operator uint8_t(){return m_command;}
+	constexpr operator uint8_t() noexcept {return m_command;}
 protected:
-	CommandBase(MsgType msgType) : m_command(msgType){}
+	constexpr CommandBase(MsgType msgType) noexcept: m_command(msgType){}
 	uint8_t m_command;
 };
 
 class VoiceCommand : public CommandBase
 {
 protected:
-	VoiceCommand(MsgType msgType, uint8_t channel) : CommandBase(msgType){m_command |= ((channel-1) & 0x0F);}
+	constexpr VoiceCommand(MsgType msgType, uint8_t channel) noexcept: CommandBase(msgType){m_command |= ((channel-1) & 0x0F);}
 };
 
 template< MsgType msgType > struct Command {};
-template<> struct Command<NoteOff>              : public VoiceCommand{ Command(uint8_t channel):VoiceCommand(NoteOff, channel){} };
-template<> struct Command<NoteOn>               : public VoiceCommand{ Command(uint8_t channel):VoiceCommand(NoteOn, channel){}};
-template<> struct Command<AfterTouchPoly>       : public VoiceCommand{ Command(uint8_t channel):VoiceCommand(AfterTouchPoly, channel){}};
-template<> struct Command<ControlChange>        : public VoiceCommand{ Command(uint8_t channel):VoiceCommand(ControlChange, channel){}};
-template<> struct Command<ProgramChange>        : public VoiceCommand{ Command(uint8_t channel):VoiceCommand(ProgramChange, channel){}};
-template<> struct Command<AfterTouchChannel>    : public VoiceCommand{ Command(uint8_t channel):VoiceCommand(AfterTouchChannel, channel){}};
-template<> struct Command<PitchBend>            : public VoiceCommand{ Command(uint8_t channel):VoiceCommand(PitchBend, channel){}};
-template<> struct Command<SystemExclusive>      : public CommandBase{ Command():CommandBase(SystemExclusive){}};
-template<> struct Command<TimeCodeQuarterFrame> : public CommandBase{ Command():CommandBase(TimeCodeQuarterFrame){}};
-template<> struct Command<SongPosition>         : public CommandBase{ Command():CommandBase(SongPosition){}};
-template<> struct Command<SongSelect>           : public CommandBase{ Command():CommandBase(SongSelect){}};
-template<> struct Command<TuneRequest>          : public CommandBase{ Command():CommandBase(TuneRequest){}};
-template<> struct Command<SystemExclusiveEnd>   : public CommandBase{ Command():CommandBase(SystemExclusiveEnd){}};
-template<> struct Command<Clock>                : public CommandBase{ Command():CommandBase(Clock){}};
-template<> struct Command<Start>                : public CommandBase{ Command():CommandBase(Start){}};
-template<> struct Command<Continue>             : public CommandBase{ Command():CommandBase(Continue){}};
-template<> struct Command<Stop>                 : public CommandBase{ Command():CommandBase(Stop){}};
-template<> struct Command<ActiveSensing>        : public CommandBase{ Command():CommandBase(ActiveSensing){}};
-template<> struct Command<SystemReset>          : public CommandBase{ Command():CommandBase(SystemReset){}};
+template<> struct Command<NoteOff>              : public VoiceCommand{ constexpr Command(uint8_t channel) noexcept:VoiceCommand(NoteOff, channel){} };
+template<> struct Command<NoteOn>               : public VoiceCommand{ constexpr Command(uint8_t channel) noexcept:VoiceCommand(NoteOn, channel){}};
+template<> struct Command<AfterTouchPoly>       : public VoiceCommand{ constexpr Command(uint8_t channel) noexcept:VoiceCommand(AfterTouchPoly, channel){}};
+template<> struct Command<ControlChange>        : public VoiceCommand{ constexpr Command(uint8_t channel) noexcept:VoiceCommand(ControlChange, channel){}};
+template<> struct Command<ProgramChange>        : public VoiceCommand{ constexpr Command(uint8_t channel) noexcept:VoiceCommand(ProgramChange, channel){}};
+template<> struct Command<AfterTouchChannel>    : public VoiceCommand{ constexpr Command(uint8_t channel) noexcept:VoiceCommand(AfterTouchChannel, channel){}};
+template<> struct Command<PitchBend>            : public VoiceCommand{ constexpr Command(uint8_t channel) noexcept:VoiceCommand(PitchBend, channel){}};
+template<> struct Command<SystemExclusive>      : public CommandBase{ constexpr Command() noexcept:CommandBase(SystemExclusive){}};
+template<> struct Command<TimeCodeQuarterFrame> : public CommandBase{ constexpr Command() noexcept:CommandBase(TimeCodeQuarterFrame){}};
+template<> struct Command<SongPosition>         : public CommandBase{ constexpr Command() noexcept:CommandBase(SongPosition){}};
+template<> struct Command<SongSelect>           : public CommandBase{ constexpr Command() noexcept:CommandBase(SongSelect){}};
+template<> struct Command<TuneRequest>          : public CommandBase{ constexpr Command() noexcept:CommandBase(TuneRequest){}};
+template<> struct Command<SystemExclusiveEnd>   : public CommandBase{ constexpr Command() noexcept:CommandBase(SystemExclusiveEnd){}};
+template<> struct Command<Clock>                : public CommandBase{ constexpr Command() noexcept:CommandBase(Clock){}};
+template<> struct Command<Start>                : public CommandBase{ constexpr Command() noexcept:CommandBase(Start){}};
+template<> struct Command<Continue>             : public CommandBase{ constexpr Command() noexcept:CommandBase(Continue){}};
+template<> struct Command<Stop>                 : public CommandBase{ constexpr Command() noexcept:CommandBase(Stop){}};
+template<> struct Command<ActiveSensing>        : public CommandBase{ constexpr Command() noexcept:CommandBase(ActiveSensing){}};
+template<> struct Command<SystemReset>          : public CommandBase{ constexpr Command() noexcept:CommandBase(SystemReset){}};
 
 template <unsigned int Size> class MsgLayout {};
 
@@ -135,12 +138,12 @@ template <>
 class MsgLayout<1>
 {
 public:
-	inline uint8_t command() const { return m_command; }
-	inline std::string toString() const { return command2Str(command()); }
-	inline bool operator==(const MsgLayout<1>& rhs) const noexcept { return (m_command == rhs.m_command); }
-	inline bool operator!=(const MsgLayout<1>& rhs) const noexcept { return !operator==(rhs); }
+	inline constexpr uint8_t command() const noexcept { return m_command; }
+	inline std::string_view toString() const noexcept { return command2Str(command()); }
+	inline constexpr bool operator==(const MsgLayout<1>& rhs) const noexcept { return (m_command == rhs.m_command); }
+	inline constexpr bool operator!=(const MsgLayout<1>& rhs) const noexcept { return !operator==(rhs); }
 protected:
-	inline MsgLayout(uint8_t command) :
+	inline constexpr MsgLayout(uint8_t command) noexcept:
 			  m_command(command) {}
 private:
 	uint8_t m_command;
@@ -150,14 +153,14 @@ template <>
 class MsgLayout<2>
 {
 public:
-	inline uint8_t command() const { return m_command; }
-	inline uint8_t data1() const { return m_data1; }
-	inline std::string toString() const { return command2Str(command()).append(" ").append(std::to_string(data1())); }
-	inline bool operator==(const MsgLayout<2>& rhs) const noexcept { return (m_command == rhs.m_command) &&
+	inline constexpr uint8_t command() const noexcept{ return m_command; }
+	inline constexpr uint8_t data1() const noexcept { return m_data1; }
+	inline std::string toString() const noexcept{ return fmt::format("{0} {1}", command2Str(command()), data1()); } 
+	inline constexpr bool operator==(const MsgLayout<2>& rhs) const noexcept { return (m_command == rhs.m_command) &&
 	                                                                        (m_data1 == rhs.m_data1); }
-	inline bool operator!=(const MsgLayout<2>& rhs) const noexcept { return !operator==(rhs); }
+	inline constexpr bool operator!=(const MsgLayout<2>& rhs) const noexcept { return !operator==(rhs); }
 protected:
-	inline MsgLayout(uint8_t command, uint8_t data1) :
+	inline constexpr MsgLayout(uint8_t command, uint8_t data1) noexcept:
 			  m_command(command),
 			  m_data1(data1)
 	{
@@ -172,19 +175,20 @@ template <>
 class MsgLayout<3>
 {
 public:
-	inline constexpr uint8_t command() const { return m_command; }
-	inline constexpr uint8_t data1() const { return m_data1; }
-	inline constexpr uint8_t data2() const { return m_data2; }
-	inline std::string toString() const { return command2Str(command()).append(" ")
-	                                                                   .append(std::to_string(data1()))
-																	   .append(" ")
-																	   .append(std::to_string(data2())); }
-	inline bool operator==(const MsgLayout<3>& rhs) const noexcept { return (m_command == rhs.m_command) &&
-	                                                                        (m_data1 == rhs.m_data1) &&
-															                (m_data2 == rhs.m_data2); }
-	inline bool operator!=(const MsgLayout<3>& rhs) const noexcept { return !operator==(rhs); }
+	inline constexpr uint8_t command() const noexcept{ return m_command; }
+	inline constexpr uint8_t data1() const noexcept{ return m_data1; }
+	inline constexpr uint8_t data2() const noexcept{ return m_data2; }
+	inline std::string toString() const noexcept{
+		return fmt::format("{0} {1} {2}", command2Str(command()), data1(), data2()); }
+	inline constexpr bool operator==(const MsgLayout<3>& rhs) const noexcept 
+	{
+		return (m_command == rhs.m_command) &&
+	          (m_data1 == rhs.m_data1) &&
+		       (m_data2 == rhs.m_data2); 
+	}
+	inline constexpr bool operator!=(const MsgLayout<3>& rhs) const noexcept { return !operator==(rhs); }
 protected:
-	inline MsgLayout(uint8_t command, uint8_t data1, uint8_t data2) :
+	inline constexpr MsgLayout(uint8_t command, uint8_t data1, uint8_t data2) noexcept:
 	          m_command(command),
 	          m_data1(data1),
 	          m_data2(data2)
@@ -200,7 +204,7 @@ private:
 
 
 
-inline bool isRealtimeCommand(uint8_t data)
+inline constexpr bool isRealtimeCommand(uint8_t data) noexcept
 {
    switch(data)
    {
@@ -216,7 +220,7 @@ inline bool isRealtimeCommand(uint8_t data)
    }
 }
 
-inline uint16_t getExpectedPayloadSize(uint8_t data)
+inline constexpr uint16_t getExpectedPayloadSize(uint8_t data) noexcept
 {
 	if(isVoiceCommand(data))
 	{
@@ -252,7 +256,7 @@ inline uint16_t getExpectedPayloadSize(uint8_t data)
 	}
 }
 
-inline MsgType getMsgTypeFromCommand(uint8_t data)
+inline constexpr MsgType getMsgTypeFromCommand(uint8_t data) noexcept
 {
 	if(!isCommand(data))
 	{
@@ -265,7 +269,7 @@ inline MsgType getMsgTypeFromCommand(uint8_t data)
 	return static_cast<MsgType>(data);
 }
 
-inline constexpr uint8_t getChannelFromVoiceCommand(uint8_t voiceCommand)
+inline constexpr uint8_t getChannelFromVoiceCommand(uint8_t voiceCommand) noexcept
 {
    return (voiceCommand & 0x0F) + 1;
 }
