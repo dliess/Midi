@@ -109,6 +109,7 @@ public:
    }
    constexpr uint8_t noteNumber() const noexcept { return data1(); }
    constexpr uint8_t pressure() const noexcept { return data2(); }
+   constexpr float relativePressure() const noexcept { return pressure() / float(1 << 7); }
 };
 
 template<>
@@ -180,7 +181,7 @@ public:
    }
    constexpr float relativeValue() const noexcept
    {
-      return value() / float(1 << 7);
+      return (value() * 2) / float(1 << 14);
    }
 };
 
@@ -312,6 +313,10 @@ struct RpnBase
    constexpr bool isCleared() const noexcept
    {
       return (idMsb == MAX) && (idLsb == MAX);
+   }
+   constexpr int getValue() const noexcept
+   {
+      return ((valueMsb << 7) + valueLsb);
    }
    constexpr float getRelativeValue() const noexcept
    {
