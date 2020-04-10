@@ -13,7 +13,7 @@ class CCHighResOutputHandler
 {
 public:
    using CCConsumerCb = std::function<void(const Message<ControlChange>&)>;
-   CCHighResOutputHandler(CCConsumerCb cb) noexcept;
+   CCHighResOutputHandler(CCConsumerCb cb) noexcept : m_ccConsumerCb(std::move(cb)) {}
    void send(const Message<ControlChangeHighRes>& msg) noexcept
    {
       auto [msb, lsb] = msg.toCCPair();
