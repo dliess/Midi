@@ -109,7 +109,10 @@ public:
    }
    constexpr uint8_t noteNumber() const noexcept { return data1(); }
    constexpr uint8_t pressure() const noexcept { return data2(); }
-   constexpr float relativePressure() const noexcept { return pressure() / float(1 << 7); }
+   constexpr float relativePressure() const noexcept
+   {
+      return pressure() / float(1 << 7);
+   }
 };
 
 template<>
@@ -220,7 +223,10 @@ template<>
 class Message<SongSelect> : public MsgLayout<2>
 {
 public:
-   constexpr Message(uint8_t song) noexcept : MsgLayout<2>(Command<SongSelect>(), song) {}
+   constexpr Message(uint8_t song) noexcept :
+      MsgLayout<2>(Command<SongSelect>(), song)
+   {
+   }
    constexpr uint8_t song() const noexcept { return data1(); }
 };
 
@@ -264,6 +270,7 @@ class Message<ActiveSensing> : public MsgLayout<1>
 {
 public:
    constexpr Message() noexcept : MsgLayout<1>(Command<ActiveSensing>()) {}
+   //std::string toString() const { return "ActiveSensing";}
 };
 
 template<>
@@ -271,6 +278,7 @@ class Message<SystemReset> : public MsgLayout<1>
 {
 public:
    constexpr Message() noexcept : MsgLayout<1>(Command<SystemReset>()) {}
+   //std::string toString() const { return "SystemReset";}
 };
 
 struct RpnBase
@@ -321,6 +329,10 @@ struct RpnBase
    constexpr float getRelativeValue() const noexcept
    {
       return ((valueMsb << 7) + valueLsb) / float(RES_MAX);
+   }
+   constexpr uint16_t getId() const noexcept
+   {
+      return (idMsb << 7) + idLsb;
    }
 };
 template<>
@@ -431,6 +443,16 @@ struct overload : Ts...
 };
 template<class... Ts>
 overload(Ts...)->overload<Ts...>;
+
+inline 
+std::string toString(const MidiMessage& msg){
+   return mpark::visit( midi::overload{
+      [](const mpark::monostate& mono) -> std::string{ return "Unknown Midi Message"; },
+      [](auto&& all) -> std::string{
+         return std::string(all.toString());
+      }
+   }, msg);
+}
 
 } // namespace midi
 
