@@ -39,7 +39,7 @@ constexpr bool CCPairMap::setPair(int msbId, int lsbId) noexcept
 
    m_data[msbId].role   = Data::Role::MSB;
    m_data[msbId].pairId = lsbId;
-   m_data[msbId].role   = Data::Role::LSB;
+   m_data[lsbId].role   = Data::Role::LSB;
    m_data[lsbId].pairId = msbId;
    return true;
 }
