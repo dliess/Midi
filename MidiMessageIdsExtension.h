@@ -2,6 +2,7 @@
 #define MIDI_MESSAGE_IDS_EXTENSION_H
 
 #include "MidiMessageIds.h"
+#include "MidiMessage.h"
 
 namespace midi
 {
