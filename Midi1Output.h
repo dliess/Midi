@@ -25,13 +25,13 @@ public:
     bool controlParameter(uint8_t channel, uint8_t ccId, uint8_t value);
     bool sysEx(const std::vector<uint8_t>& msg);
     bool send(const MidiMessage& msg);
+    bool send(const MsgLayout<1>& midiMessage);
+    bool send(const MsgLayout<2>& midiMessage);
+    bool send(const MsgLayout<3>& midiMessage);
 private:
     std::unique_ptr<IMidiOutMedium> m_pMedium;
     xrpn::XRpnOutputHandler         m_xrpnOutputHandler;
     CCHighResOutputHandler          m_CCHighResOutputHandler;
-    bool send(const MsgLayout<1>& midiMessage);
-    bool send(const MsgLayout<2>& midiMessage);
-    bool send(const MsgLayout<3>& midiMessage);
 };
 
 } // namespace midi
