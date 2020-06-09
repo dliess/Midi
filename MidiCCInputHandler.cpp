@@ -6,24 +6,19 @@ midi::CCInputHandler::Ret midi::CCInputHandler::handleIncomingCCMsg(const Messag
    {
       case CCPairMap::Data::Role::SingleValue:
       {
-         if (m_lastReceivedCcMsb)
-         {
-            m_lastReceivedCcMsb.reset();
-         }
          return ccMsg;
       }
       case CCPairMap::Data::Role::MSB:
       {
-         m_lastReceivedCcMsb.emplace(ccMsg);
+         m_ccPairMap[ccMsg.controllerNumber()].lastValue[ccMsg.channel() - 1] = ccMsg.controllerValue();
          break;
       }
       case CCPairMap::Data::Role::LSB:
       {
-         if (m_lastReceivedCcMsb)
-         {
-            return Message<ControlChangeHighRes>(*m_lastReceivedCcMsb, ccMsg);
-         }
-         break;
+         const uint8_t msbCtrlNr = m_ccPairMap[ccMsg.controllerNumber()].pairId;
+         const uint8_t msbLastValue = m_ccPairMap[msbCtrlNr].lastValue[ccMsg.channel() - 1];
+         Message<ControlChange> msb(ccMsg.channel(), msbCtrlNr, msbLastValue);
+         return Message<ControlChangeHighRes>(msb, ccMsg);
       }
    }
    return Ret();

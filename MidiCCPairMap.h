@@ -21,6 +21,7 @@ public:
         static constexpr int NO_PAIR = -1;
         Role role{Role::SingleValue};
         int pairId{NO_PAIR};
+        std::array<uint8_t, midi::NUM_CHANNELS> lastValue{0};
     };
     inline constexpr bool setPair(int msbId, int lsbId) noexcept;
     inline constexpr const Data& operator[](int index) const noexcept;

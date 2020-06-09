@@ -1,8 +1,6 @@
 #ifndef MIDI_CC_INPUT_HANDLER_H
 #define MIDI_CC_INPUT_HANDLER_H
 
-#include <optional>
-
 #include "MidiCCPairMap.h"
 #include "MidiMessage.h"
 #include <mpark/variant.hpp>
@@ -19,7 +17,6 @@ public:
 
 private:
    CCPairMap                             m_ccPairMap;
-   std::optional<Message<ControlChange>> m_lastReceivedCcMsb;
 };
 
 } // namespace midi
