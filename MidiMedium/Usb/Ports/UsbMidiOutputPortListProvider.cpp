@@ -1,5 +1,5 @@
 #include "UsbMidiOutputPortListProvider.h"
-#include <rtmidi/RtMidi.h>
+#include <RtMidi.h>
 #include <iostream>
 
 using namespace midi;

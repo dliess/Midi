@@ -2,7 +2,7 @@
 #define USB_MIDI_OUT_H
 
 #include "IMidiOutMedium.h"
-#include <rtmidi/RtMidi.h>
+#include <RtMidi.h>
 #include <vector>
 #include <cstdint>
 #include <memory>
