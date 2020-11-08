@@ -10,6 +10,7 @@ CPMFindPackage(
   NAME rtmidi
   GITHUB_REPOSITORY dliess/rtmidi
   GIT_TAG 27f55e39deae3cdf7ddb43d304b1e432199e4517
+  OPTIONS "BUILD_SHARED_LIBS OFF"
 )
 
 CPMFindPackage(
