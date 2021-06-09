@@ -37,6 +37,16 @@ bool Midi1Output::pitchBend(uint8_t channel, int16_t value)
     return send( Message<PitchBend>(channel, value) );
 }
 
+bool Midi1Output::afterTouchPoly(uint8_t channel, uint8_t note, int16_t value)
+{
+    return send(Message<AfterTouchPoly>(channel, note, value));
+}
+
+bool Midi1Output::afterTouch(uint8_t channel, int16_t value)
+{
+    return send(Message<AfterTouchChannel>(channel, value));
+}
+
 bool Midi1Output::controlParameter(uint8_t channel, uint8_t ccId, uint8_t value)
 {
     return send( Message<ControlChange>(channel, ccId, value) );

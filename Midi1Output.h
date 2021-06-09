@@ -22,6 +22,8 @@ public:
     bool noteOn(uint8_t channel, uint8_t note, uint8_t velocity);
     bool noteOff(uint8_t channel, uint8_t note, uint8_t velocity);
     bool pitchBend(uint8_t channel, int16_t value);
+    bool afterTouchPoly(uint8_t channel, uint8_t note, int16_t value);
+    bool afterTouch(uint8_t channel, int16_t value);
     bool controlParameter(uint8_t channel, uint8_t ccId, uint8_t value);
     bool sysEx(const std::vector<uint8_t>& msg);
     bool send(const MidiMessage& msg);
