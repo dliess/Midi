@@ -50,68 +50,6 @@ bool Midi1Output::controlParameter(uint8_t channel, uint8_t ccId, uint8_t value)
    return send(Message<ControlChange>(channel, ccId, value));
 }
 
-bool Midi1Output::start()
-{
-   if (m_transportMasked)
-   {
-      return true;
-   }
-   bool ret{false};
-   ret       = send(Message<Start>());
-   m_started = true;
-   for (auto cb : m_startedChangedCbs) cb(m_started);
-   return ret;
-}
-
-bool Midi1Output::stop()
-{
-   if (m_transportMasked)
-   {
-      return true;
-   }
-   bool ret{false};
-   ret       = send(Message<Stop>());
-   m_started = false;
-   for (auto cb : m_startedChangedCbs) cb(m_started);
-   return ret;
-}
-
-bool Midi1Output::toggleStartStop()
-{
-   if (!m_started)
-   {
-      return start();
-   }
-   else
-   {
-      return stop();
-   }
-}
-
-void Midi1Output::setTransportMasked(bool masked)
-{
-   if (m_transportMasked == masked)
-   {
-      return;
-   }
-   if (masked)
-   {
-       if(m_started) stop();
-   }
-   m_transportMasked = masked;
-    for(auto cb : m_transportMaskChangedCbs) cb(m_transportMasked);
-}
-
-void Midi1Output::registerStartedChangedCb(StartedChangedCb cb)
-{
-   m_startedChangedCbs.push_back(cb);
-}
-
-void Midi1Output::registerTransportMaskChangedCb(TransportMaskChangedCb cb)
-{
-    m_transportMaskChangedCbs.push_back(cb);
-}
-
 bool Midi1Output::sysEx(const std::vector<uint8_t> &msg)
 {
    return m_pMedium->send(msg);
