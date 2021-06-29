@@ -29,7 +29,8 @@ RUN apt-get install -y \
         g++ \
         git \
         libasound2-dev \
-        libgtest-dev 
+        libgtest-dev \
+        libgmock-dev
 
 # some utilities for runtime
 RUN apt-get install -y \
