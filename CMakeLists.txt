@@ -2,8 +2,10 @@ cmake_minimum_required(VERSION 2.8.12)
 
 project(Midi)
 
-set (CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_DEBUG_POSTFIX _g)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(cmake/CPM.cmake)
 
 CPMFindPackage(
@@ -27,13 +29,37 @@ CPMFindPackage(
 )
 
 add_subdirectory(MidiMedium)
+add_subdirectory(UnitTest)
 
-add_library(midi STATIC
-    "Midi1Output.cpp"
-    "MidiCCInputHandler.cpp"
-    "XRpnInputHandler.cpp"
-    "XRpnOutputHandler.cpp"
+set(SOURCES
+  "Midi1Output.cpp"
+  "MidiCCInputHandler.cpp"
+  "XRpnInputHandler.cpp"
+  "XRpnOutputHandler.cpp"
 )
+
+set(HEADERS
+  "IMidi1InputCallback.h"
+  "Midi1Output.h"
+  "MidiCCInputHandler.h"
+  "Midi.h"
+  "MidiInput.h"
+  "MidiMessage.h"
+  "MidiMessageIds.h"
+  "TransportHandling.h"
+  "TransportHandling.tcc"
+  "XRpnOutputHandler.h"
+  "Midi1Input.h"
+  "MidiCCHighResOutputHandler.h"
+  "MidiCCPairMap.h"
+  "MidiInputCbBase.h"
+  "MidiInput_inl.h"
+  "MidiMessageIdsExtension.h"
+  "NonBufferedMessageDrain.h"
+  "XRpnInputHandler.h"
+)
+
+add_library(midi STATIC ${SOURCES} ${HEADERS})
 
 target_include_directories(midi PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}

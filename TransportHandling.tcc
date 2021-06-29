@@ -1,5 +1,4 @@
 #include "MidiMessage.h"
-
 namespace midi
 {
 template <class Derived> Derived& TransportHandling<Derived>::derived()
@@ -20,9 +19,12 @@ template <class Derived> bool TransportHandling<Derived>::start()
       return true;
    }
    bool ret{false};
-   ret       = derived().send(Message<Start>());
-   m_started = true;
-   for (auto& e : m_startedChangedCbs) { e.second(m_started); };
+   if (!m_started)
+   {
+      ret       = derived().sendStart();
+      m_started = true;
+      for (auto& e : m_startedChangedCbs) { e.second(m_started); };
+   }
    return ret;
 }
 
@@ -33,9 +35,12 @@ template <class Derived> bool TransportHandling<Derived>::stop()
       return true;
    }
    bool ret{false};
-   ret       = derived().send(Message<Stop>());
-   m_started = false;
-   for (auto& e : m_startedChangedCbs) { e.second(m_started); };
+   if (m_started)
+   {
+      ret       = derived().sendStop();
+      m_started = false;
+      for (auto& e : m_startedChangedCbs) { e.second(m_started); };
+   }
    return ret;
 }
 
@@ -71,14 +76,17 @@ template <class Derived>
 void TransportHandling<Derived>::registerStartedChangedCb(void* id,
                                                           StartedChangedCb cb)
 {
-   m_startedChangedCbs.emplace_back(std::piecewise_construct, id, cb);
+   m_startedChangedCbs.push_back(std::make_pair(id, cb));
+   // TODO: m_startedChangedCbs.emplace_back(std::piecewise_construct, id, cb);
 }
 
 template <class Derived>
 void TransportHandling<Derived>::registerTransportMaskChangedCb(
     void* id, TransportMaskChangedCb cb)
 {
-   m_transportMaskChangedCbs.emplace_back(std::piecewise_construct, id, cb);
+   m_transportMaskChangedCbs.push_back(std::make_pair(id, cb));
+   // TODO: m_transportMaskChangedCbs.emplace_back(std::piecewise_construct, id,
+   // cb);
 }
 
 template <class Derived>
@@ -89,7 +97,7 @@ void TransportHandling<Derived>::unregisterStartedChangedCb(void* id)
    {
       if (it->first == id)
       {
-         m_startedChangedCbs.erase(it);
+         m_startedChangedCbs.erase(it--);
       }
    }
 }
@@ -102,7 +110,7 @@ void TransportHandling<Derived>::unregisterTransportMaskChangedCb(void* id)
    {
       if (it->first == id)
       {
-         m_transportMaskChangedCbs.erase(it);
+         m_transportMaskChangedCbs.erase(it--);
       }
    }
 }

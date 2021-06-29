@@ -26,6 +26,8 @@ public:
     bool afterTouchPoly(uint8_t channel, uint8_t note, int16_t value);
     bool afterTouch(uint8_t channel, int16_t value);
     bool controlParameter(uint8_t channel, uint8_t ccId, uint8_t value);
+    bool sendStart();
+    bool sendStop();
     bool sysEx(const std::vector<uint8_t>& msg);
     bool send(const MidiMessage& msg);
     bool send(const MsgLayout<1>& midiMessage);

@@ -50,6 +50,16 @@ bool Midi1Output::controlParameter(uint8_t channel, uint8_t ccId, uint8_t value)
    return send(Message<ControlChange>(channel, ccId, value));
 }
 
+bool Midi1Output::sendStart()
+{
+   return send(Message<Start>());
+}
+
+bool Midi1Output::sendStop()
+{
+   return send(Message<Stop>());
+}
+
 bool Midi1Output::sysEx(const std::vector<uint8_t> &msg)
 {
    return m_pMedium->send(msg);
