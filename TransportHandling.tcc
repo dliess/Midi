@@ -2,18 +2,15 @@
 
 namespace midi
 {
-
-template <class Derived>
-Derived& TransportHandling<Derived>::derived()
+template <class Derived> Derived& TransportHandling<Derived>::derived()
 {
-    return *static_cast<Derived*>(this);
+   return *static_cast<Derived*>(this);
 }
-
 
 template <class Derived>
 const Derived& TransportHandling<Derived>::derived() const
 {
-    return *static_cast<Derived*>(this);
+   return *static_cast<Derived*>(this);
 }
 
 template <class Derived> bool TransportHandling<Derived>::start()
@@ -25,7 +22,7 @@ template <class Derived> bool TransportHandling<Derived>::start()
    bool ret{false};
    ret       = derived().send(Message<Start>());
    m_started = true;
-   for (auto cb : m_startedChangedCbs) cb(m_started);
+   for (auto& e : m_startedChangedCbs) { e.second(m_started); };
    return ret;
 }
 
@@ -38,7 +35,7 @@ template <class Derived> bool TransportHandling<Derived>::stop()
    bool ret{false};
    ret       = derived().send(Message<Stop>());
    m_started = false;
-   for (auto cb : m_startedChangedCbs) cb(m_started);
+   for (auto& e : m_startedChangedCbs) { e.second(m_started); };
    return ret;
 }
 
@@ -67,20 +64,47 @@ void TransportHandling<Derived>::setTransportMasked(bool masked)
          stop();
    }
    m_transportMasked = masked;
-   for (auto cb : m_transportMaskChangedCbs) cb(m_transportMasked);
+   for (auto& e : m_transportMaskChangedCbs) { e.second(m_transportMasked); }
 }
 
 template <class Derived>
-void TransportHandling<Derived>::registerStartedChangedCb(StartedChangedCb cb)
+void TransportHandling<Derived>::registerStartedChangedCb(void* id,
+                                                          StartedChangedCb cb)
 {
-   m_startedChangedCbs.push_back(cb);
+   m_startedChangedCbs.emplace_back(std::piecewise_construct, id, cb);
 }
 
 template <class Derived>
 void TransportHandling<Derived>::registerTransportMaskChangedCb(
-    TransportMaskChangedCb cb)
+    void* id, TransportMaskChangedCb cb)
 {
-   m_transportMaskChangedCbs.push_back(cb);
+   m_transportMaskChangedCbs.emplace_back(std::piecewise_construct, id, cb);
+}
+
+template <class Derived>
+void TransportHandling<Derived>::unregisterStartedChangedCb(void* id)
+{
+   for (auto it = m_startedChangedCbs.begin(); it != m_startedChangedCbs.end();
+        ++it)
+   {
+      if (it->first == id)
+      {
+         m_startedChangedCbs.erase(it);
+      }
+   }
+}
+
+template <class Derived>
+void TransportHandling<Derived>::unregisterTransportMaskChangedCb(void* id)
+{
+   for (auto it = m_transportMaskChangedCbs.begin();
+        it != m_transportMaskChangedCbs.end(); ++it)
+   {
+      if (it->first == id)
+      {
+         m_transportMaskChangedCbs.erase(it);
+      }
+   }
 }
 
 }   // namespace midi
