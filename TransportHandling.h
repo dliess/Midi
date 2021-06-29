@@ -15,6 +15,7 @@ public:
     bool start();
     bool stop();
     bool toggleStartStop();
+    bool getTransportMasked() const;
     void setTransportMasked(bool masked);
     using StartedChangedCb = std::function<void(bool)>;
     void registerStartedChangedCb(void* id, StartedChangedCb cb);

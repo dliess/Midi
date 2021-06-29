@@ -57,6 +57,12 @@ template <class Derived> bool TransportHandling<Derived>::toggleStartStop()
 }
 
 template <class Derived>
+bool TransportHandling<Derived>::getTransportMasked() const
+{
+   return m_transportMasked;
+}
+
+template <class Derived>
 void TransportHandling<Derived>::setTransportMasked(bool masked)
 {
    if (m_transportMasked == masked)
