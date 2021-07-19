@@ -34,7 +34,7 @@ midi::MidiMessage midi::xrpn::XRpnInputHandler::handle(const Message<ControlChan
 {
     const auto channelIdx = ccMsg.channel() - 1;
     if(!mpark::holds_alternative<XRPN_TYPE>(m_activeXRpn[channelIdx])){
-        m_activeXRpn[channelIdx].emplace<XRPN_TYPE>(channelIdx);
+        m_activeXRpn[channelIdx].emplace<XRPN_TYPE>(channelIdx + 1);
     }
     auto& xrpn = mpark::get<XRPN_TYPE>(m_activeXRpn[channelIdx]);
     switch(ccMsg.controllerNumber()){
