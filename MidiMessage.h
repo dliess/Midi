@@ -139,6 +139,13 @@ public:
    {
       return controllerValue() / float(RES_MAX);
    }
+   constexpr float getRelativeValue(uint16_t from, uint16_t to) const noexcept
+   {
+      if(controllerValue() <= from) return 0.0;
+      if(controllerValue() > to) return 1.0;
+      const uint16_t res = to - from + 1;
+      return (2.0 * (controllerValue() - from) + 1) / (2.0 * res);
+   }
 };
 
 template<>
@@ -330,6 +337,14 @@ struct RpnBase
    {
       return ((valueMsb << 7) + valueLsb) / float(RES_MAX);
    }
+   constexpr float getRelativeValue(uint16_t from, uint16_t to) const noexcept
+   {
+      const uint16_t value = getValue();
+      if(value <= from) return 0.0;
+      if(value > to) return 1.0;
+      const uint16_t res = to - from + 1;
+      return (2.0 * (value - from) + 1) / (2.0 * res);
+   }
    constexpr uint16_t getId() const noexcept
    {
       return (idMsb << 7) + idLsb;
@@ -410,6 +425,15 @@ struct Message<ControlChangeHighRes>
    {
       return ((msbValue << 7) + lsbValue) / float(RES_MAX);
    }
+   constexpr float getRelativeValue(uint16_t from, uint16_t to) const noexcept
+   {
+      const uint16_t value = controllerValue();
+      if(value <= from) return 0.0;
+      if(value > to) return 1.0;
+      const uint16_t res = to - from + 1;
+      return (2.0 * (value - from) + 1) / (2.0 * res);
+   }
+
    constexpr uint8_t controllerNumber() const noexcept { return msbCCId; }
 
    std::pair<Message<ControlChange>, Message<ControlChange>> toCCPair() const
