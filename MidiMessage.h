@@ -8,11 +8,9 @@
 
 namespace midi
 {
-template<unsigned int SIZE>
-class VoiceMsgLayout;
+template <unsigned int SIZE> class VoiceMsgLayout;
 
-template<>
-class VoiceMsgLayout<2> : public MsgLayout<2>
+template <> class VoiceMsgLayout<2> : public MsgLayout<2>
 {
 public:
    constexpr uint8_t channel() const noexcept
@@ -27,13 +25,12 @@ public:
 
 protected:
    inline constexpr VoiceMsgLayout(uint8_t command, uint8_t data1) noexcept :
-      MsgLayout<2>(command, data1)
+       MsgLayout<2>(command, data1)
    {
    }
 };
 
-template<>
-class VoiceMsgLayout<3> : public MsgLayout<3>
+template <> class VoiceMsgLayout<3> : public MsgLayout<3>
 {
 public:
    constexpr uint8_t channel() const noexcept
@@ -49,28 +46,25 @@ public:
 protected:
    inline constexpr VoiceMsgLayout(uint8_t command, uint8_t data1,
                                    uint8_t data2) noexcept :
-      MsgLayout<3>(command, data1, data2)
+       MsgLayout<3>(command, data1, data2)
    {
    }
 };
 
-template<MsgType msgType>
-class Message
+template <MsgType msgType> class Message
 {
 };
 
-template<>
-class Message<MsgOmni> : public VoiceMsgLayout<3>
+template <> class Message<MsgOmni> : public VoiceMsgLayout<3>
 {
 };
 
-template<>
-class Message<NoteOff> : public VoiceMsgLayout<3>
+template <> class Message<NoteOff> : public VoiceMsgLayout<3>
 {
 public:
    constexpr Message(uint8_t channel, uint8_t noteNumber,
                      uint8_t velocity) noexcept :
-      VoiceMsgLayout<3>(Command<NoteOff>(channel), noteNumber, velocity)
+       VoiceMsgLayout<3>(Command<NoteOff>(channel), noteNumber, velocity)
    {
    }
    constexpr uint8_t noteNumber() const noexcept { return data1(); }
@@ -81,13 +75,12 @@ public:
    }
 };
 
-template<>
-class Message<NoteOn> : public VoiceMsgLayout<3>
+template <> class Message<NoteOn> : public VoiceMsgLayout<3>
 {
 public:
    constexpr Message(uint8_t channel, uint8_t noteNumber,
                      uint8_t velocity) noexcept :
-      VoiceMsgLayout<3>(Command<NoteOn>(channel), noteNumber, velocity)
+       VoiceMsgLayout<3>(Command<NoteOn>(channel), noteNumber, velocity)
    {
    }
    constexpr uint8_t noteNumber() const noexcept { return data1(); }
@@ -98,13 +91,12 @@ public:
    }
 };
 
-template<>
-class Message<AfterTouchPoly> : public VoiceMsgLayout<3>
+template <> class Message<AfterTouchPoly> : public VoiceMsgLayout<3>
 {
 public:
    constexpr Message(uint8_t channel, uint8_t noteNumber,
                      uint8_t pressure) noexcept :
-      VoiceMsgLayout<3>(Command<AfterTouchPoly>(channel), noteNumber, pressure)
+       VoiceMsgLayout<3>(Command<AfterTouchPoly>(channel), noteNumber, pressure)
    {
    }
    constexpr uint8_t noteNumber() const noexcept { return data1(); }
@@ -115,22 +107,27 @@ public:
    }
 };
 
-template<>
-class Message<ControlChange> : public VoiceMsgLayout<3>
+template <> class Message<ControlChange> : public VoiceMsgLayout<3>
 {
 public:
    static constexpr int RES_MAX = (1 << 7);
 
    constexpr Message(uint8_t channel, uint8_t controllerNumber,
                      uint8_t controllerValue) noexcept :
-      VoiceMsgLayout<3>(Command<ControlChange>(channel), controllerNumber,
-                        controllerValue)
+       VoiceMsgLayout<3>(Command<ControlChange>(channel), controllerNumber,
+                         controllerValue)
    {
    }
    constexpr Message(uint8_t channel, uint8_t controllerNumber,
                      float controllerValue) noexcept :
-      VoiceMsgLayout<3>(Command<ControlChange>(channel), controllerNumber,
-                        controllerValue * RES_MAX)
+       VoiceMsgLayout<3>(Command<ControlChange>(channel), controllerNumber,
+                         controllerValue * RES_MAX)
+   {
+   }
+   constexpr Message(uint8_t channel, uint8_t controllerNumber,
+                     float controllerValue, uint16_t from, uint16_t to) noexcept :
+       VoiceMsgLayout<3>(Command<ControlChange>(channel), controllerNumber,
+                         (controllerValue * (to - from + 1)) + from)
    {
    }
    constexpr uint8_t controllerNumber() const noexcept { return data1(); }
@@ -141,30 +138,30 @@ public:
    }
    constexpr float getRelativeValue(uint16_t from, uint16_t to) const noexcept
    {
-      if(controllerValue() <= from) return 0.0;
-      if(controllerValue() > to) return 1.0;
+      if (controllerValue() <= from)
+         return 0.0;
+      if (controllerValue() > to)
+         return 1.0;
       const uint16_t res = to - from + 1;
       return (2.0 * (controllerValue() - from) + 1) / (2.0 * res);
    }
 };
 
-template<>
-class Message<ProgramChange> : public VoiceMsgLayout<2>
+template <> class Message<ProgramChange> : public VoiceMsgLayout<2>
 {
 public:
    constexpr Message(uint8_t channel, uint8_t programNumber) noexcept :
-      VoiceMsgLayout<2>(Command<ProgramChange>(channel), programNumber)
+       VoiceMsgLayout<2>(Command<ProgramChange>(channel), programNumber)
    {
    }
    constexpr uint8_t programNumber() const noexcept { return data1(); }
 };
 
-template<>
-class Message<AfterTouchChannel> : public VoiceMsgLayout<2>
+template <> class Message<AfterTouchChannel> : public VoiceMsgLayout<2>
 {
 public:
    constexpr Message(uint8_t channel, uint8_t value) noexcept :
-      VoiceMsgLayout<2>(Command<AfterTouchChannel>(channel), value)
+       VoiceMsgLayout<2>(Command<AfterTouchChannel>(channel), value)
    {
    }
    constexpr uint8_t value() const noexcept { return data1(); }
@@ -174,13 +171,12 @@ public:
    }
 };
 
-template<>
-class Message<PitchBend> : public VoiceMsgLayout<3>
+template <> class Message<PitchBend> : public VoiceMsgLayout<3>
 {
 public:
    constexpr Message(uint8_t channel, int16_t value) noexcept :
-      VoiceMsgLayout<3>(Command<PitchBend>(channel), (value + 0x2000) & 0x7F,
-                        ((value + 0x2000) >> 7) & 0x7F)
+       VoiceMsgLayout<3>(Command<PitchBend>(channel), (value + 0x2000) & 0x7F,
+                         ((value + 0x2000) >> 7) & 0x7F)
    {
    }
    constexpr int16_t value() const noexcept
@@ -195,28 +191,26 @@ public:
    }
 };
 
-template<>
-class Message<TimeCodeQuarterFrame> : public MsgLayout<2>
+template <> class Message<TimeCodeQuarterFrame> : public MsgLayout<2>
 {
 public:
    constexpr Message(uint8_t data) noexcept :
-      MsgLayout<2>(Command<TimeCodeQuarterFrame>(), data)
+       MsgLayout<2>(Command<TimeCodeQuarterFrame>(), data)
    {
    }
    constexpr Message(uint8_t nibbleType, uint8_t nibbleValue) noexcept :
-      MsgLayout<2>(Command<TimeCodeQuarterFrame>(),
-                   ((nibbleType & 0x07) << 4) | (nibbleValue & 0x0F))
+       MsgLayout<2>(Command<TimeCodeQuarterFrame>(),
+                    ((nibbleType & 0x07) << 4) | (nibbleValue & 0x0F))
    {
    }
    constexpr uint8_t value() const noexcept { return data1(); }
 };
 
-template<>
-class Message<SongPosition> : public MsgLayout<3>
+template <> class Message<SongPosition> : public MsgLayout<3>
 {
 public:
    constexpr Message(uint16_t beats) noexcept :
-      MsgLayout<3>(Command<SongPosition>(), beats & 0x7F, (beats >> 7) & 0x7F)
+       MsgLayout<3>(Command<SongPosition>(), beats & 0x7F, (beats >> 7) & 0x7F)
    {
    }
    constexpr uint16_t beats() const noexcept
@@ -226,66 +220,58 @@ public:
    }
 };
 
-template<>
-class Message<SongSelect> : public MsgLayout<2>
+template <> class Message<SongSelect> : public MsgLayout<2>
 {
 public:
    constexpr Message(uint8_t song) noexcept :
-      MsgLayout<2>(Command<SongSelect>(), song)
+       MsgLayout<2>(Command<SongSelect>(), song)
    {
    }
    constexpr uint8_t song() const noexcept { return data1(); }
 };
 
-template<>
-class Message<TuneRequest> : public MsgLayout<1>
+template <> class Message<TuneRequest> : public MsgLayout<1>
 {
 public:
    constexpr Message() noexcept : MsgLayout<1>(Command<TuneRequest>()) {}
 };
 
-template<>
-class Message<Clock> : public MsgLayout<1>
+template <> class Message<Clock> : public MsgLayout<1>
 {
 public:
    constexpr Message() noexcept : MsgLayout<1>(Command<Clock>()) {}
 };
 
-template<>
-class Message<Start> : public MsgLayout<1>
+template <> class Message<Start> : public MsgLayout<1>
 {
 public:
    constexpr Message() noexcept : MsgLayout<1>(Command<Start>()) {}
 };
 
-template<>
-class Message<Continue> : public MsgLayout<1>
+template <> class Message<Continue> : public MsgLayout<1>
 {
 public:
    constexpr Message() noexcept : MsgLayout<1>(Command<Continue>()) {}
 };
 
-template<>
-class Message<Stop> : public MsgLayout<1>
+template <> class Message<Stop> : public MsgLayout<1>
 {
 public:
    constexpr Message() noexcept : MsgLayout<1>(Command<Stop>()) {}
 };
 
-template<>
-class Message<ActiveSensing> : public MsgLayout<1>
+template <> class Message<ActiveSensing> : public MsgLayout<1>
 {
 public:
    constexpr Message() noexcept : MsgLayout<1>(Command<ActiveSensing>()) {}
-   //std::string toString() const { return "ActiveSensing";}
+   // std::string toString() const { return "ActiveSensing";}
 };
 
-template<>
-class Message<SystemReset> : public MsgLayout<1>
+template <> class Message<SystemReset> : public MsgLayout<1>
 {
 public:
    constexpr Message() noexcept : MsgLayout<1>(Command<SystemReset>()) {}
-   //std::string toString() const { return "SystemReset";}
+   // std::string toString() const { return "SystemReset";}
 };
 
 struct RpnBase
@@ -297,9 +283,20 @@ struct RpnBase
    constexpr RpnBase(uint8_t channelNr) noexcept : channelNr(channelNr) {}
    constexpr RpnBase(uint8_t channelNr, int idMsb, int idLsb,
                      float value) noexcept :
-      channelNr(channelNr),
-      idMsb(idMsb), idLsb(idLsb), valueMsb(int(value* RES_MAX) >> BASE_RES),
-      valueLsb(int(value* RES_MAX) & BASE_RES_BITMASK)
+       channelNr(channelNr),
+       idMsb(idMsb),
+       idLsb(idLsb),
+       valueMsb(int(value* RES_MAX) >> BASE_RES),
+       valueLsb(int(value* RES_MAX) & BASE_RES_BITMASK)
+   {
+   }
+   constexpr RpnBase(uint8_t channelNr, int idMsb, int idLsb,
+                     float value, uint16_t from, uint16_t to) noexcept :
+       channelNr(channelNr),
+       idMsb(idMsb),
+       idLsb(idLsb),
+       valueMsb((int(value * (to - from + 1)) + from) >> BASE_RES),
+       valueLsb((int(value * (to - from + 1)) + from) & BASE_RES_BITMASK)
    {
    }
    static constexpr uint8_t UNSET       = 0xFF;
@@ -340,23 +337,26 @@ struct RpnBase
    constexpr float getRelativeValue(uint16_t from, uint16_t to) const noexcept
    {
       const uint16_t value = getValue();
-      if(value <= from) return 0.0;
-      if(value > to) return 1.0;
+      if (value <= from)
+         return 0.0;
+      if (value > to)
+         return 1.0;
       const uint16_t res = to - from + 1;
       return (2.0 * (value - from) + 1) / (2.0 * res);
    }
-   constexpr uint16_t getId() const noexcept
-   {
-      return (idMsb << 7) + idLsb;
-   }
+   constexpr uint16_t getId() const noexcept { return (idMsb << 7) + idLsb; }
 };
-template<>
-struct Message<RPN> : public RpnBase
+template <> struct Message<RPN> : public RpnBase
 {
    constexpr Message<RPN>(uint8_t channelNr) noexcept : RpnBase(channelNr) {}
    constexpr Message<RPN>(uint8_t channelNr, int idMsb, int idLsb,
                           float value) noexcept :
-      RpnBase(channelNr, idMsb, idLsb, value)
+       RpnBase(channelNr, idMsb, idLsb, value)
+   {
+   }
+   constexpr Message<RPN>(uint8_t channelNr, int idMsb, int idLsb,
+                          float value, uint16_t from, uint16_t to) noexcept :
+       RpnBase(channelNr, idMsb, idLsb, value, from, to)
    {
    }
 
@@ -369,13 +369,17 @@ struct Message<RPN> : public RpnBase
    static constexpr int CC_ID_LSB = 100;
 };
 
-template<>
-struct Message<NRPN> : public RpnBase
+template <> struct Message<NRPN> : public RpnBase
 {
    constexpr Message<NRPN>(uint8_t channelNr) noexcept : RpnBase(channelNr) {}
    constexpr Message<NRPN>(uint8_t channelNr, int idMsb, int idLsb,
                            float value) noexcept :
-      RpnBase(channelNr, idMsb, idLsb, value)
+       RpnBase(channelNr, idMsb, idLsb, value)
+   {
+   }
+   constexpr Message<NRPN>(uint8_t channelNr, int idMsb, int idLsb,
+                           float value, uint16_t from, uint16_t to) noexcept :
+       RpnBase(channelNr, idMsb, idLsb, value, from, to)
    {
    }
    std::string toString() const noexcept
@@ -387,8 +391,7 @@ struct Message<NRPN> : public RpnBase
    static constexpr int CC_ID_LSB = 98;
 };
 
-template<>
-struct Message<ControlChangeHighRes>
+template <> struct Message<ControlChangeHighRes>
 {
    uint8_t channelId;
    uint8_t msbCCId;
@@ -400,17 +403,27 @@ struct Message<ControlChangeHighRes>
 
    constexpr Message(uint8_t channelId, uint8_t msbId, uint8_t lsbId,
                      float relValue) noexcept :
-      channelId(channelId),
-      msbCCId(msbId), lsbCCId(lsbId), msbValue(int(relValue* RES_MAX) >> 7),
-      lsbValue(int(relValue* RES_MAX) & 0x7F)
+       channelId(channelId),
+       msbCCId(msbId),
+       lsbCCId(lsbId),
+       msbValue(int(relValue* RES_MAX) >> 7),
+       lsbValue(int(relValue* RES_MAX) & 0x7F)
+   {
+   }
+
+   constexpr Message(uint8_t channelId, uint8_t msbId, uint8_t lsbId,
+                     float relValue, uint16_t from, uint16_t to) noexcept :
+       channelId(channelId), msbCCId(msbId), lsbCCId(lsbId), msbValue((int(relValue * (to - from + 1)) + from) >> 7), lsbValue((int(relValue * (to - from + 1)) + from) & 0x7F)
    {
    }
 
    constexpr Message(const Message<ControlChange>& msb,
                      const Message<ControlChange>& lsb) noexcept :
-      channelId(msb.channel()),
-      msbCCId(msb.controllerNumber()), lsbCCId(lsb.controllerNumber()),
-      msbValue(msb.controllerValue()), lsbValue(lsb.controllerValue())
+       channelId(msb.channel()),
+       msbCCId(msb.controllerNumber()),
+       lsbCCId(lsb.controllerNumber()),
+       msbValue(msb.controllerValue()),
+       lsbValue(lsb.controllerValue())
    {
    }
 
@@ -428,20 +441,22 @@ struct Message<ControlChangeHighRes>
    constexpr float getRelativeValue(uint16_t from, uint16_t to) const noexcept
    {
       const uint16_t value = controllerValue();
-      if(value <= from) return 0.0;
-      if(value > to) return 1.0;
+      if (value <= from)
+         return 0.0;
+      if (value > to)
+         return 1.0;
       const uint16_t res = to - from + 1;
       return (2.0 * (value - from) + 1) / (2.0 * res);
    }
 
    constexpr uint8_t controllerNumber() const noexcept { return msbCCId; }
 
-   std::pair<Message<ControlChange>, Message<ControlChange>> toCCPair() const
-      noexcept
+   std::pair<Message<ControlChange>, Message<ControlChange>> toCCPair()
+       const noexcept
    {
       return std::make_pair(
-         Message<ControlChange>(channelId, msbCCId, msbValue),
-         Message<ControlChange>(channelId, lsbCCId, lsbValue));
+          Message<ControlChange>(channelId, msbCCId, msbValue),
+          Message<ControlChange>(channelId, lsbCCId, lsbValue));
    }
 
    std::string toString() const noexcept
@@ -452,32 +467,32 @@ struct Message<ControlChangeHighRes>
 };
 
 using MidiMessage = mpark::variant<
-   mpark::monostate, Message<NoteOff>, Message<NoteOn>, Message<AfterTouchPoly>,
-   Message<ControlChange>, Message<ProgramChange>, Message<AfterTouchChannel>,
-   Message<PitchBend>, Message<TimeCodeQuarterFrame>, Message<SongPosition>,
-   Message<SongSelect>, Message<TuneRequest>, Message<Clock>, Message<Start>,
-   Message<Continue>, Message<Stop>, Message<ActiveSensing>,
-   Message<SystemReset>, Message<RPN>, Message<NRPN>,
-   Message<ControlChangeHighRes>>;
+    mpark::monostate, Message<NoteOff>, Message<NoteOn>,
+    Message<AfterTouchPoly>, Message<ControlChange>, Message<ProgramChange>,
+    Message<AfterTouchChannel>, Message<PitchBend>,
+    Message<TimeCodeQuarterFrame>, Message<SongPosition>, Message<SongSelect>,
+    Message<TuneRequest>, Message<Clock>, Message<Start>, Message<Continue>,
+    Message<Stop>, Message<ActiveSensing>, Message<SystemReset>, Message<RPN>,
+    Message<NRPN>, Message<ControlChangeHighRes>>;
 
-template<class... Ts>
-struct overload : Ts...
+template <class... Ts> struct overload : Ts...
 {
    using Ts::operator()...;
 };
-template<class... Ts>
-overload(Ts...)->overload<Ts...>;
+template <class... Ts> overload(Ts...) -> overload<Ts...>;
 
-inline 
-std::string toString(const MidiMessage& msg){
-   return mpark::visit( midi::overload{
-      [](const mpark::monostate& mono) -> std::string{ return "Unknown Midi Message"; },
-      [](auto&& all) -> std::string{
-         return std::string(all.toString());
-      }
-   }, msg);
+inline std::string toString(const MidiMessage& msg)
+{
+   return mpark::visit(
+       midi::overload{[](const mpark::monostate& mono) -> std::string {
+                         return "Unknown Midi Message";
+                      },
+                      [](auto&& all) -> std::string {
+                         return std::string(all.toString());
+                      }},
+       msg);
 }
 
-} // namespace midi
+}   // namespace midi
 
-#endif // MIDI_INPUT_MESSAGE_H_
+#endif   // MIDI_INPUT_MESSAGE_H_
