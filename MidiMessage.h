@@ -118,17 +118,19 @@ public:
                          controllerValue)
    {
    }
-   constexpr Message(uint8_t channel, uint8_t controllerNumber,
-                     float controllerValue) noexcept :
-       VoiceMsgLayout<3>(Command<ControlChange>(channel), controllerNumber,
-                         controllerValue * RES_MAX)
+   static Message<ControlChange> fromRelativeValue(uint8_t channelNr,
+                                                   uint8_t controllerNumber,
+                                                   float value)
    {
+      return Message(channelNr, controllerNumber, value * RES_MAX);
    }
-   constexpr Message(uint8_t channel, uint8_t controllerNumber,
-                     float controllerValue, uint16_t from, uint16_t to) noexcept :
-       VoiceMsgLayout<3>(Command<ControlChange>(channel), controllerNumber,
-                         (controllerValue * (to - from + 1)) + from)
+   static Message<ControlChange> fromRelativeValue(uint8_t channelNr,
+                                                   uint8_t controllerNumber,
+                                                   float value, uint16_t from,
+                                                   uint16_t to)
    {
+      return Message(channelNr, controllerNumber,
+                     from + (value * (to - from + 1)));
    }
    constexpr uint8_t controllerNumber() const noexcept { return data1(); }
    constexpr uint8_t controllerValue() const noexcept { return data2(); }
@@ -282,23 +284,25 @@ struct RpnBase
 
    constexpr RpnBase(uint8_t channelNr) noexcept : channelNr(channelNr) {}
    constexpr RpnBase(uint8_t channelNr, int idMsb, int idLsb,
-                     float value) noexcept :
+                     uint16_t value) noexcept :
        channelNr(channelNr),
        idMsb(idMsb),
        idLsb(idLsb),
-       valueMsb(int(value* RES_MAX) >> BASE_RES),
-       valueLsb(int(value* RES_MAX) & BASE_RES_BITMASK)
+       valueMsb(value >> BASE_RES),
+       valueLsb(value & BASE_RES_BITMASK)
    {
    }
-   constexpr RpnBase(uint8_t channelNr, int idMsb, int idLsb,
-                     float value, uint16_t from, uint16_t to) noexcept :
-       channelNr(channelNr),
-       idMsb(idMsb),
-       idLsb(idLsb),
-       valueMsb((int(value * (to - from + 1)) + from) >> BASE_RES),
-       valueLsb((int(value * (to - from + 1)) + from) & BASE_RES_BITMASK)
+   static RpnBase fromRelativeValue(uint8_t channelNr, int idMsb, int idLsb,
+                                    float value)
    {
+      return RpnBase(channelNr, idMsb, idLsb, value * RES_MAX);
    }
+   static RpnBase fromRelativeValue(uint8_t channelNr, int idMsb, int idLsb,
+                                    float value, uint16_t from, uint16_t to)
+   {
+      return RpnBase(channelNr, idMsb, idLsb, from + (value * (to - from + 1)));
+   }
+
    static constexpr uint8_t UNSET       = 0xFF;
    static constexpr uint8_t MAX         = 127;
    static constexpr int CC_ID_VALUE_MSB = 6;
@@ -350,14 +354,20 @@ template <> struct Message<RPN> : public RpnBase
 {
    constexpr Message<RPN>(uint8_t channelNr) noexcept : RpnBase(channelNr) {}
    constexpr Message<RPN>(uint8_t channelNr, int idMsb, int idLsb,
-                          float value) noexcept :
+                          uint16_t value) noexcept :
        RpnBase(channelNr, idMsb, idLsb, value)
    {
    }
-   constexpr Message<RPN>(uint8_t channelNr, int idMsb, int idLsb,
-                          float value, uint16_t from, uint16_t to) noexcept :
-       RpnBase(channelNr, idMsb, idLsb, value, from, to)
+   static Message<RPN> fromRelativeValue(uint8_t channelNr, int idMsb,
+                                         int idLsb, float value)
    {
+      return fromRelativeValue(channelNr, idMsb, idLsb, value);
+   }
+   static Message<RPN> fromRelativeValue(uint8_t channelNr, int idMsb,
+                                         int idLsb, float value, uint16_t from,
+                                         uint16_t to)
+   {
+      return fromRelativeValue(channelNr, idMsb, idLsb, value, from, to);
    }
 
    std::string toString() const noexcept
@@ -373,14 +383,20 @@ template <> struct Message<NRPN> : public RpnBase
 {
    constexpr Message<NRPN>(uint8_t channelNr) noexcept : RpnBase(channelNr) {}
    constexpr Message<NRPN>(uint8_t channelNr, int idMsb, int idLsb,
-                           float value) noexcept :
+                           uint16_t value) noexcept :
        RpnBase(channelNr, idMsb, idLsb, value)
    {
    }
-   constexpr Message<NRPN>(uint8_t channelNr, int idMsb, int idLsb,
-                           float value, uint16_t from, uint16_t to) noexcept :
-       RpnBase(channelNr, idMsb, idLsb, value, from, to)
+   static Message<NRPN> fromRelativeValue(uint8_t channelNr, int idMsb,
+                                          int idLsb, float value)
    {
+      return fromRelativeValue(channelNr, idMsb, idLsb, value);
+   }
+   static Message<NRPN> fromRelativeValue(uint8_t channelNr, int idMsb,
+                                          int idLsb, float value, uint16_t from,
+                                          uint16_t to)
+   {
+      return fromRelativeValue(channelNr, idMsb, idLsb, value, from, to);
    }
    std::string toString() const noexcept
    {
@@ -402,18 +418,12 @@ template <> struct Message<ControlChangeHighRes>
    static constexpr int RES_MAX = 1 << 14;
 
    constexpr Message(uint8_t channelId, uint8_t msbId, uint8_t lsbId,
-                     float relValue) noexcept :
+                     uint16_t value) noexcept :
        channelId(channelId),
        msbCCId(msbId),
        lsbCCId(lsbId),
-       msbValue(int(relValue* RES_MAX) >> 7),
-       lsbValue(int(relValue* RES_MAX) & 0x7F)
-   {
-   }
-
-   constexpr Message(uint8_t channelId, uint8_t msbId, uint8_t lsbId,
-                     float relValue, uint16_t from, uint16_t to) noexcept :
-       channelId(channelId), msbCCId(msbId), lsbCCId(lsbId), msbValue((int(relValue * (to - from + 1)) + from) >> 7), lsbValue((int(relValue * (to - from + 1)) + from) & 0x7F)
+       msbValue(value >> 7),
+       lsbValue(value & 0x7F)
    {
    }
 
@@ -425,6 +435,21 @@ template <> struct Message<ControlChangeHighRes>
        msbValue(msb.controllerValue()),
        lsbValue(lsb.controllerValue())
    {
+   }
+
+   static Message<ControlChangeHighRes> fromRelativeValue(uint8_t channelNr,
+                                                          int idMsb, int idLsb,
+                                                          float value)
+   {
+      return Message(channelNr, idMsb, idLsb, value * RES_MAX);
+   }
+   static Message<ControlChangeHighRes> fromRelativeValue(uint8_t channelNr,
+                                                          int idMsb, int idLsb,
+                                                          float value,
+                                                          uint16_t from,
+                                                          uint16_t to)
+   {
+      return Message(channelNr, idMsb, idLsb, from + (value * (to - from + 1)));
    }
 
    constexpr uint8_t channel() const noexcept { return channelId; }
