@@ -361,13 +361,13 @@ template <> struct Message<RPN> : public RpnBase
    static Message<RPN> fromRelativeValue(uint8_t channelNr, int idMsb,
                                          int idLsb, float value)
    {
-      return fromRelativeValue(channelNr, idMsb, idLsb, value);
+      return Message<RPN>(channelNr, idMsb, idLsb, value * RES_MAX);
    }
    static Message<RPN> fromRelativeValue(uint8_t channelNr, int idMsb,
                                          int idLsb, float value, uint16_t from,
                                          uint16_t to)
    {
-      return fromRelativeValue(channelNr, idMsb, idLsb, value, from, to);
+      return Message<RPN>(channelNr, idMsb, idLsb, from + value * (to - from + 1));
    }
 
    std::string toString() const noexcept
@@ -390,13 +390,13 @@ template <> struct Message<NRPN> : public RpnBase
    static Message<NRPN> fromRelativeValue(uint8_t channelNr, int idMsb,
                                           int idLsb, float value)
    {
-      return fromRelativeValue(channelNr, idMsb, idLsb, value);
+      return Message<NRPN>(channelNr, idMsb, idLsb, value * RES_MAX);
    }
    static Message<NRPN> fromRelativeValue(uint8_t channelNr, int idMsb,
                                           int idLsb, float value, uint16_t from,
                                           uint16_t to)
    {
-      return fromRelativeValue(channelNr, idMsb, idLsb, value, from, to);
+      return Message<NRPN>(channelNr, idMsb, idLsb, from + value * (to - from + 1));
    }
    std::string toString() const noexcept
    {
