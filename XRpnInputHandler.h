@@ -58,7 +58,7 @@ midi::MidiMessage midi::xrpn::XRpnInputHandler::handle(const Message<ControlChan
             }
             xrpn.valueMsb = ccMsg.controllerValue();
             xrpn.valueLsb = 0;
-            return xrpn;
+            break;
         }
         case RpnBase::CC_ID_VALUE_LSB:
         {

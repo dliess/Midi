@@ -83,7 +83,7 @@ void midi::Midi1Input<MessageDrain>::processIncomingData(double timestamp, std::
             if(xrpn::XRpnInputHandler::isXRpnMsg(*pEvent))
             {
                 auto xrpnMsg = m_xrpnHandler.handleMsg(*pEvent);
-                if(xrpnMsg.index() != mpark::variant_npos){
+                if(!mpark::holds_alternative<mpark::monostate>(xrpnMsg)){
                     MessageDrain::toBuffer(xrpnMsg);
                 }
             }

@@ -9,7 +9,6 @@
 #include "XRpnInputHandler.h"
 #include "MidiCCInputHandler.h"
 #include "NonBufferedMessageDrain.h"
-//class IMidiInMedium;
 
 namespace midi { class IMidi1InputCallback; }
 
