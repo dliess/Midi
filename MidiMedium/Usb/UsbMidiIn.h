@@ -37,6 +37,7 @@ private:
                          std::vector<unsigned char> *pMessage,
                          void *userData);
     void cb(double timeStamp, std::vector<uint8_t> &message);
+    static void errorCb(RtMidiError::Type type, const std::string &errorText, void *userData);
 };
 
 } // namespace midi

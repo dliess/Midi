@@ -27,6 +27,7 @@ bool UsbMidiIn::openPort(int portNmbr) noexcept
         m_pRtMidiIn = std::make_unique<RtMidiIn>(__RTMIDI_API__);
         m_pRtMidiIn->openPort(portNmbr);
         m_pRtMidiIn->setCallback(helperCb, this);
+        m_pRtMidiIn->setErrorCallback(errorCb, this);
         m_pRtMidiIn->ignoreTypes( /*sysex*/false, /*timimng*/false, /*sense*/false );
         m_usbPortName = rtmidiadapt::DeviceOnUsbPort( m_pRtMidiIn->getPortName(portNmbr) ).getUsbPortName();
         m_deviceName = rtmidiadapt::DeviceOnUsbPort( m_pRtMidiIn->getPortName(portNmbr) ).getDeviceName();
@@ -90,4 +91,8 @@ void UsbMidiIn::cb(double timeStamp,
     }
 }
 
+void UsbMidiIn::errorCb(RtMidiError::Type type, const std::string &errorText, void *userData)
+{
+    std::cerr << "UsbMidiIn::errorCb type: " << type << " errorText: " << errorText;
+}
 
