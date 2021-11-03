@@ -8,12 +8,20 @@ set(CMAKE_DEBUG_POSTFIX _g)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(cmake/CPM.cmake)
 
+#CPMFindPackage(
+#  NAME rtmidi
+#  GITHUB_REPOSITORY dliess/rtmidi
+#  GIT_TAG 292353f990a6f5ecf13d7807cfeacabd16825bf7
+#  OPTIONS "BUILD_SHARED_LIBS OFF"
+#)
+
 CPMFindPackage(
   NAME rtmidi
-  GITHUB_REPOSITORY dliess/rtmidi
-  GIT_TAG 27f55e39deae3cdf7ddb43d304b1e432199e4517
+  GITHUB_REPOSITORY thestk/rtmidi
+  GIT_TAG b2208130e9d60795cdeb6d8b2eb5b9ef69262412
   OPTIONS "BUILD_SHARED_LIBS OFF"
 )
+
 
 CPMFindPackage(
   NAME fmt
