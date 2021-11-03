@@ -491,6 +491,19 @@ template <> struct Message<ControlChangeHighRes>
    }
 };
 
+template <> struct Message<SystemExclusive> : public std::vector<uint8_t>
+{
+   std::string toString() const noexcept
+   {
+      std::string ret;
+      for(const auto&e : *this)
+      {
+         ret.append(fmt::format("{}, ", int(e)));
+      }
+      return ret;
+   }
+};
+
 using MidiMessage = mpark::variant<
     mpark::monostate, Message<NoteOff>, Message<NoteOn>,
     Message<AfterTouchPoly>, Message<ControlChange>, Message<ProgramChange>,
@@ -498,7 +511,7 @@ using MidiMessage = mpark::variant<
     Message<TimeCodeQuarterFrame>, Message<SongPosition>, Message<SongSelect>,
     Message<TuneRequest>, Message<Clock>, Message<Start>, Message<Continue>,
     Message<Stop>, Message<ActiveSensing>, Message<SystemReset>, Message<RPN>,
-    Message<NRPN>, Message<ControlChangeHighRes>>;
+    Message<NRPN>, Message<ControlChangeHighRes>, Message<SystemExclusive>>;
 
 template <class... Ts> struct overload : Ts...
 {

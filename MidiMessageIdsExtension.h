@@ -61,6 +61,12 @@ inline bool operator==(const MidiMsgId<midi::PitchBend>& lhs,
    return true;
 }
 
+inline bool operator==(const MidiMsgId<midi::SystemExclusive>& lhs,
+                       const MidiMsgId<midi::SystemExclusive>& rhs) noexcept
+{
+   return true;
+}
+
 inline constexpr static MidiMessageId midiMessageToId(
    const midi::MidiMessage& msg) noexcept
 {
@@ -93,6 +99,9 @@ inline constexpr static MidiMessageId midiMessageToId(
          },
          [](const midi::Message<midi::PitchBend>& msg) -> MidiMessageId {
             return MidiMsgId<midi::PitchBend>{};
+         },
+         [](const midi::Message<midi::SystemExclusive>& msg) -> MidiMessageId {
+            return MidiMsgId<midi::SystemExclusive>{};
          },
          [](auto&& other) -> MidiMessageId { return mpark::monostate(); }},
       msg);
