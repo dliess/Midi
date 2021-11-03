@@ -127,6 +127,8 @@ void midi::Midi1Input<MessageDrain>::processIncomingData(double timestamp, std::
         //System Common Commands
 		case SystemExclusive:
         {
+            auto pEvent = reinterpret_cast<Message<SystemExclusive>*>(&data);
+            MessageDrain::toBuffer(*pEvent);
             if(m_pMidiInCb) m_pMidiInCb->onSystemExclusive(timestamp, data);
             break;
         }
