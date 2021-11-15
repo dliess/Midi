@@ -14,6 +14,7 @@ class MidiInputCbBase
 public:
    using Callback = std::function<void(const MidiMessage&)>;
    void registerMidiInCb(Callback cb) { m_callbacks.emplace_back(cb); };
+   void clearCbs() noexcept { m_callbacks.clear(); }
 protected:
    template<typename T>
    void fromBuffer(T&& msg)
