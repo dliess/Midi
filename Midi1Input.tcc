@@ -4,14 +4,20 @@
 #include <iostream>
 
 template<typename MessageDrain>
-midi::Midi1Input<MessageDrain>::Midi1Input(std::unique_ptr<IMidiInMedium> pMedium, bool xrpnHandling) :
+midi::Midi1Input<MessageDrain>::Midi1Input(std::unique_ptr<IMidiInMedium> pMedium) :
     m_pMedium(std::move(pMedium)),
     m_pMidiInCb(nullptr)
 {
-    if(xrpnHandling) m_xrpnHandler.emplace();
+    m_xrpnHandler.emplace();
     m_pMedium->registerCallback([this](double timestamp, std::vector<uint8_t>& data){
         this->processIncomingData(timestamp, data);
     });
+}
+
+template<typename MessageDrain>
+void midi::Midi1Input<MessageDrain>::disableXRPN()
+{
+    m_xrpnHandler.reset();
 }
 
 template<typename MessageDrain>

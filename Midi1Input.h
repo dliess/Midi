@@ -20,11 +20,12 @@ template<typename MessageDrain = NonBufferedMessageDrain>
 class Midi1Input : public MessageDrain
 {
 public:
-    Midi1Input(std::unique_ptr<IMidiInMedium> pMedium, bool xrpnHandling = false);
+    Midi1Input(std::unique_ptr<IMidiInMedium> pMedium);
     bool setCCHighResPair(int msbId, int lsbId) noexcept;
     IMidiInMedium& medium();
     const IMidiInMedium& medium() const;
     void registerMidiInCbIf(IMidi1InputCallback* pMidiInCb);
+    void disableXRPN();
 private:
     std::unique_ptr<IMidiInMedium> m_pMedium;
     IMidi1InputCallback*           m_pMidiInCb;
