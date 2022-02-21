@@ -1,6 +1,10 @@
 #include "UsbMidiInputPortListProvider.h"
 
-#include <RtMidi.h>
+#ifdef __RTMIDI_ADDED__
+    #include <RtMidi.h>
+#else
+    #include <rtmidi/RtMidi.h>
+#endif
 
 #include <cassert>
 #include <iostream>

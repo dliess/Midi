@@ -1,12 +1,19 @@
 cmake_minimum_required(VERSION 3.11)
 
-project(Midi)
+project(Midi
+        LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_DEBUG_POSTFIX _g)
 
+include(GNUInstallDirs)
+
+option (MIDI_BUILD_TESTS "build tests enabled" ON)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(cmake/CPM.cmake)
+
+find_package(Threads REQUIRED)
 
 #CPMFindPackage(
 #  NAME rtmidi
@@ -18,26 +25,38 @@ include(cmake/CPM.cmake)
 CPMFindPackage(
   NAME rtmidi
   GITHUB_REPOSITORY thestk/rtmidi
-  GIT_TAG b2208130e9d60795cdeb6d8b2eb5b9ef69262412
+  #GIT_TAG b2208130e9d60795cdeb6d8b2eb5b9ef69262412
+  GIT_TAG e8ae727b4728b49dad5f9a2c312945148fa25454
   OPTIONS "BUILD_SHARED_LIBS OFF"
 )
-
+if(rtmidi_ADDED)
+  add_library(RtMidi::rtmidi ALIAS rtmidi)
+endif()
 
 CPMFindPackage(
   NAME fmt
   GITHUB_REPOSITORY fmtlib/fmt
-  VERSION 7.0.3
-  GIT_TAG 76e97dc4df0517749da366a2f78ebb4f87977804
+  GIT_TAG 6.2.0
 )
+if(fmt_ADDED)
+  install(TARGETS fmt EXPORT ${PROJECT_NAME}-targets
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
+endif()
 
 CPMFindPackage(
-  NAME variant
+  NAME mpark_variant
   GITHUB_REPOSITORY mpark/variant
   VERSION 1.4.0
 )
+if(mpark_variant_ADDED)
+  install(TARGETS mpark_variant EXPORT ${PROJECT_NAME}-targets
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
+endif()
 
 add_subdirectory(MidiMedium)
+if(MIDI_BUILD_TESTS)
 add_subdirectory(UnitTest)
+endif()
 
 set(SOURCES
   "Midi1Output.cpp"
@@ -58,6 +77,7 @@ set(HEADERS
   "TransportHandling.tcc"
   "XRpnOutputHandler.h"
   "Midi1Input.h"
+  "Midi1Input.tcc"
   "MidiCCHighResOutputHandler.h"
   "MidiCCPairMap.h"
   "MidiInputCbBase.h"
@@ -67,14 +87,36 @@ set(HEADERS
   "XRpnInputHandler.h"
 )
 
-add_library(midi STATIC ${SOURCES} ${HEADERS})
+set(TARGET_NAME "midi")
 
-target_include_directories(midi PUBLIC
-    ${CMAKE_CURRENT_LIST_DIR}
-    $<TARGET_PROPERTY:midimedium,INTERFACE_INCLUDE_DIRECTORIES>
+add_library(${TARGET_NAME} STATIC ${SOURCES} ${HEADERS})
+
+target_include_directories(${TARGET_NAME}
+  PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>"
+    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>"
+)
+set_target_properties(${TARGET_NAME} PROPERTIES
+    FRAMEWORK TRUE
+    PUBLIC_HEADER "${HEADERS}"
 )
 
-target_link_libraries(midi
-    PUBLIC mpark_variant
-    PUBLIC fmt
+target_link_libraries(${TARGET_NAME}
+  PUBLIC
+    midimedium
+    mpark_variant
+    fmt
+)
+
+install(TARGETS ${TARGET_NAME} EXPORT ${PROJECT_NAME}-targets
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
+
+
+install(EXPORT ${PROJECT_NAME}-targets
+  NAMESPACE  MIDI::
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+)
+
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/cmake/midi-config.cmake" 
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
 )
