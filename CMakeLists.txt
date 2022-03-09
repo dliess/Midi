@@ -24,9 +24,9 @@ find_package(Threads REQUIRED)
 
 CPMFindPackage(
   NAME rtmidi
-  GITHUB_REPOSITORY thestk/rtmidi
+  GITHUB_REPOSITORY dliess/rtmidi
   #GIT_TAG b2208130e9d60795cdeb6d8b2eb5b9ef69262412
-  GIT_TAG e8ae727b4728b49dad5f9a2c312945148fa25454
+  GIT_TAG develop
   OPTIONS "BUILD_SHARED_LIBS OFF"
 )
 if(rtmidi_ADDED)
