@@ -1,5 +1,8 @@
 add_subdirectory(Test EXCLUDE_FROM_ALL)
+
+if(MIDI_BUILD_TESTS)
 add_subdirectory(UnitTest EXCLUDE_FROM_ALL)
+endif()
 
 set(TARGET_NAME "usbMidiPortHandling")
 
