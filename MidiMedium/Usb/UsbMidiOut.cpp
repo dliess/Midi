@@ -4,18 +4,6 @@
 
 using namespace midi;
 
-UsbMidiOut::UsbMidiOut() noexcept
-{
-}
-
-UsbMidiOut::UsbMidiOut(UsbMidiOut&& other) noexcept :
-    m_pRtMidiOut(std::move(other.m_pRtMidiOut)),
-    m_usbPortName(std::move(m_usbPortName)),
-    m_deviceName(std::move(m_deviceName))
-{
-}
-
-
 bool UsbMidiOut::openPort(int portNmbr) noexcept
 {
     if(m_pRtMidiOut)
@@ -26,8 +14,10 @@ bool UsbMidiOut::openPort(int portNmbr) noexcept
     {
         m_pRtMidiOut = std::make_unique<RtMidiOut>(__RTMIDI_API__);
         m_pRtMidiOut->openPort(portNmbr);
-        m_usbPortName = rtmidiadapt::DeviceOnUsbPort( m_pRtMidiOut->getPortName(portNmbr) ).getUsbPortName();
-        m_deviceName = rtmidiadapt::DeviceOnUsbPort( m_pRtMidiOut->getPortName(portNmbr) ).getDeviceName();
+        const auto rtMidiPort = rtmidiadapt::DeviceOnUsbPort(m_pRtMidiOut->getPortName(portNmbr));
+        m_deviceName = rtMidiPort.getDeviceName();
+        m_devicePortName = rtMidiPort.getMidiPort();
+        m_usbPortName = rtMidiPort.getUsbPortName();
     }
     catch ( RtMidiError &error )
     {
@@ -51,14 +41,19 @@ IMidiMedium::Type UsbMidiOut::getType() const
     return USB;
 }
 
-std::string UsbMidiOut::getPortName() const
-{
-    return m_usbPortName;
-}
-
 std::string UsbMidiOut::getDeviceName() const
 {
     return m_deviceName;
+}
+
+std::string UsbMidiOut::getDevicePortName() const
+{
+    return m_devicePortName;
+}
+
+std::string UsbMidiOut::getHostConnectorPortName() const
+{
+    return m_usbPortName;
 }
 
 bool UsbMidiOut::send(const std::vector<uint8_t>& message)

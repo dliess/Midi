@@ -13,7 +13,7 @@ IMidiMedium::Type MidiInMediumDummy::getType() const
     return m_type;
 }
 
-std::string MidiInMediumDummy::getPortName() const
+std::string MidiInMediumDummy::getDevicePortName() const
 {
     return "UsbDummyPort";
 }
@@ -44,7 +44,7 @@ IMidiMedium::Type MidiOutMediumDummy::getType() const
     return m_type;
 }
 
-std::string MidiOutMediumDummy::getPortName() const
+std::string MidiOutMediumDummy::getDevicePortName() const
 {
     return "UsbDummyPort";
 }

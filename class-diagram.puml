@@ -37,7 +37,7 @@ class IMidiMedium
 {
     +{abstract}virtual ~IMidiMedium(){}
     +{abstract}virtual Type getType() const = 0;
-    +{abstract}virtual std::string getPortName() const = 0;
+    +{abstract}virtual std::string getDevicePortName() const = 0;
     +{abstract}virtual std::string getDeviceName() const = 0;
 }
 
@@ -64,7 +64,7 @@ class UsbMidiIn
     +void closePort() noexcept;
 
     +Type getType() const override;
-    +std::string getPortName() const override;
+    +std::string getDevicePortName() const override;
     +std::string getDeviceName() const override;
     +void registerCallback(Callback cb) override;
     +void update() override;
@@ -80,7 +80,7 @@ class UsbMidiOut
     +bool openPort(int portNmbr) noexcept;
     +void closePort() noexcept;
     +Type getType() const override;
-    +std::string getPortName() const override;
+    +std::string getDevicePortName() const override;
     +std::string getDeviceName() const override;
     +bool send(const std::vector<uint8_t>& message) override;
 }

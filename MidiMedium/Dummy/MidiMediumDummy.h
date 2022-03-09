@@ -15,8 +15,9 @@ public:
     MidiInMediumDummy(const std::string& usbDeviceName, IMidiMedium::Type type);
 
     IMidiMedium::Type getType() const override;
-    std::string getPortName() const override;
+    std::string getDevicePortName() const override;
     std::string getDeviceName() const override;
+    std::string getHostConnectorPortName() const override;
     void registerCallback(Callback cb) override;
     void update() override;
 private:
@@ -30,8 +31,9 @@ public:
     MidiOutMediumDummy(const std::string& usbDeviceName, IMidiMedium::Type type);
 
     IMidiMedium::Type getType() const override;
-    std::string getPortName() const override;
+    std::string getDevicePortName() const override;
     std::string getDeviceName() const override;
+    std::string getHostConnectorPortName() const override;
     bool send(const std::vector<uint8_t>& message) override;
 private:
     std::string       m_usbDeviceName;

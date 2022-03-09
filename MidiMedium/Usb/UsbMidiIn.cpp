@@ -4,18 +4,6 @@
 
 using namespace midi;
 
-UsbMidiIn::UsbMidiIn() noexcept
-{
-}
-
-UsbMidiIn::UsbMidiIn(UsbMidiIn&& other) noexcept :
-    m_pRtMidiIn(std::move(other.m_pRtMidiIn)),
-    m_usbPortName(std::move(other.m_usbPortName)),
-    m_deviceName(std::move(other.m_deviceName)),
-    m_cb(std::move(other.m_cb))
-{
-}
-
 bool UsbMidiIn::openPort(int portNmbr) noexcept
 {
     if(m_pRtMidiIn)
@@ -29,8 +17,10 @@ bool UsbMidiIn::openPort(int portNmbr) noexcept
         m_pRtMidiIn->setCallback(helperCb, this);
         m_pRtMidiIn->setErrorCallback(errorCb, this);
         m_pRtMidiIn->ignoreTypes( /*sysex*/false, /*timimng*/true, /*sense*/true );
-        m_usbPortName = rtmidiadapt::DeviceOnUsbPort( m_pRtMidiIn->getPortName(portNmbr) ).getUsbPortName();
-        m_deviceName = rtmidiadapt::DeviceOnUsbPort( m_pRtMidiIn->getPortName(portNmbr) ).getDeviceName();
+        const auto rtMidiPort = rtmidiadapt::DeviceOnUsbPort( m_pRtMidiIn->getPortName(portNmbr) );
+        m_deviceName = rtMidiPort.getDeviceName();
+        m_devicePortName = rtMidiPort.getMidiPort();
+        m_usbPortName = rtMidiPort.getUsbPortName();
     }
     catch ( RtMidiError &error )
     {
@@ -54,14 +44,19 @@ IMidiMedium::Type UsbMidiIn::getType() const
     return USB;
 }
 
-std::string UsbMidiIn::getPortName() const
+std::string UsbMidiIn::getDeviceName() const
+{
+    return m_deviceName;
+}
+
+std::string UsbMidiIn::getDevicePortName() const
 {
     return m_usbPortName;
 }
 
-std::string UsbMidiIn::getDeviceName() const
+std::string UsbMidiIn::getHostConnectorPortName() const
 {
-    return m_deviceName;
+    return m_usbPortName;
 }
 
 void UsbMidiIn::registerCallback(Callback cb)

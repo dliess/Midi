@@ -18,24 +18,27 @@ namespace midi
 class UsbMidiIn : public IMidiInMedium
 {
 public:
-    UsbMidiIn() noexcept;
+    UsbMidiIn() noexcept = default;
     UsbMidiIn(const UsbMidiIn& other) = delete;
-    UsbMidiIn(UsbMidiIn&& other) noexcept;
+    UsbMidiIn(UsbMidiIn&& other) noexcept = default;
     UsbMidiIn& operator=(const UsbMidiIn& other) = delete;
-    
+    UsbMidiIn& operator=(UsbMidiIn&& other) = default;
+
     bool openPort(int portNmbr) noexcept;
     void closePort() noexcept;
 
     Type getType() const override;
-    std::string getPortName() const override;
+    std::string getDevicePortName() const override;
     std::string getDeviceName() const override;
+    std::string getHostConnectorPortName() const override;
     void registerCallback(Callback cb) override;
     void update() override;
 
 private:
     std::unique_ptr<RtMidiIn> m_pRtMidiIn;
-    std::string m_usbPortName;
     std::string m_deviceName;
+    std::string m_devicePortName;
+    std::string m_usbPortName;
     std::vector<Callback> m_cb;
     static void helperCb(double timeStamp,
                          std::vector<unsigned char> *pMessage,

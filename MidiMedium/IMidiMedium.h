@@ -17,8 +17,9 @@ public:
     };
     virtual ~IMidiMedium(){}
     virtual Type getType() const = 0;
-    virtual std::string getPortName() const = 0;
+    virtual std::string getDevicePortName() const = 0;
     virtual std::string getDeviceName() const = 0;
+    virtual std::string getHostConnectorPortName() const = 0;
 };
 
 } // namespace midi
