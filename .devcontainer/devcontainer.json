@@ -3,12 +3,18 @@
    "build": {
 		"dockerfile": "Dockerfile"
    },
-   "runArgs" : ["--privileged",
+   "runArgs" : [
+     "--rm", "--privileged",
+     "--network=host",
      "--group-add", "audio"
    ],
    "settings": { 
-      "terminal.integrated.shell.linux": "/bin/bash"
+      "terminal.integrated.shell.linux": "/bin/zsh",
+      "terminal.integrated.detectLocale": "off"
    },
+   "mounts": [
+      "type=bind,source=/dev,target=/dev"
+   ],
    "extensions": [
       "eamodio.gitlens",
       "eugenwiens.bitbake",
@@ -19,6 +25,7 @@
       "plex.vscode-protolint",
       "zxh404.vscode-proto3",
       "xaver.clang-format",
-      "abronan.capnproto-syntax"
+      "abronan.capnproto-syntax",
+      "fredericbonnet.cmake-test-adapter"
    ]
 }

@@ -26,7 +26,7 @@ CPMFindPackage(
   NAME rtmidi
   GITHUB_REPOSITORY dliess/rtmidi
   #GIT_TAG b2208130e9d60795cdeb6d8b2eb5b9ef69262412
-  GIT_TAG develop
+  GIT_TAG develop-usbport
   OPTIONS "BUILD_SHARED_LIBS OFF"
 )
 if(rtmidi_ADDED)
@@ -53,8 +53,10 @@ if(mpark_variant_ADDED)
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 endif()
 
+include(CTest)
 add_subdirectory(MidiMedium)
 if(MIDI_BUILD_TESTS)
+enable_testing()
 add_subdirectory(UnitTest)
 endif()
 

@@ -1,4 +1,5 @@
 add_subdirectory(Test EXCLUDE_FROM_ALL)
+add_subdirectory(UnitTest EXCLUDE_FROM_ALL)
 
 set(TARGET_NAME "usbMidiPortHandling")
 
