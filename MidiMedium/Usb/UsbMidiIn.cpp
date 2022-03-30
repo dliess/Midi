@@ -51,7 +51,7 @@ std::string UsbMidiIn::getDeviceName() const
 
 std::string UsbMidiIn::getDevicePortName() const
 {
-    return m_usbPortName;
+    return m_devicePortName;
 }
 
 std::string UsbMidiIn::getHostConnectorPortName() const
