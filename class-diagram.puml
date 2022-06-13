@@ -61,6 +61,7 @@ class UsbMidiIn
     +UsbMidiIn& operator=(const UsbMidiIn& other) = delete;
     
     +bool openPort(int portNmbr) noexcept;
+    +bool openVirtualPort(std::string portName) noexcept;
     +void closePort() noexcept;
 
     +Type getType() const override;
@@ -78,6 +79,7 @@ class UsbMidiOut
     +UsbMidiOut& operator=(const UsbMidiOut& other) = delete;
 
     +bool openPort(int portNmbr) noexcept;
+    +bool openVirtualPort(std::string portName) noexcept;
     +void closePort() noexcept;
     +Type getType() const override;
     +std::string getDevicePortName() const override;

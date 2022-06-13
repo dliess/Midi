@@ -31,6 +31,32 @@ bool UsbMidiIn::openPort(int portNmbr) noexcept
     return true;
 }
 
+bool UsbMidiIn::openVirtualPort(std::string portName) noexcept
+{
+    if(m_pRtMidiIn)
+    {
+        return true;
+    }
+    try
+    {
+        m_pRtMidiIn = std::make_unique<RtMidiIn>(__RTMIDI_API__);
+        m_pRtMidiIn->openVirtualPort(portName);
+        m_pRtMidiIn->setCallback(helperCb, this);
+        m_pRtMidiIn->setErrorCallback(errorCb, this);
+        m_pRtMidiIn->ignoreTypes( /*sysex*/false, /*timimng*/true, /*sense*/true );
+        m_deviceName = std::move(portName);
+        m_devicePortName = m_deviceName;
+        m_usbPortName = "0000";
+    }
+    catch ( RtMidiError &error )
+    {
+        m_pRtMidiIn.reset();
+        error.printMessage();
+        return false;
+    }
+    return true;
+}
+
 void UsbMidiIn::closePort() noexcept
 {
     if(m_pRtMidiIn)

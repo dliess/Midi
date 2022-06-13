@@ -26,6 +26,7 @@ public:
     UsbMidiOut& operator=(UsbMidiOut&& other) = default;
 
     bool openPort(int portNmbr) noexcept;
+    bool openVirtualPort(std::string portName) noexcept;
     void closePort() noexcept;
     Type getType() const override;
     std::string getDeviceName() const override;
