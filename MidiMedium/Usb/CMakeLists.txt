@@ -4,6 +4,8 @@ message(STATUS "RtMidiApi='${RtMidiApi}'")
 
 add_subdirectory(Ports)
 
+add_subdirectory(Test EXCLUDE_FROM_ALL)
+
 set(TARGET_NAME "usbmidi")
 
 set(SOURCES

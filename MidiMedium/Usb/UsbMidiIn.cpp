@@ -13,14 +13,14 @@ bool UsbMidiIn::openPort(int portNmbr) noexcept
     try
     {
         m_pRtMidiIn = std::make_unique<RtMidiIn>(__RTMIDI_API__);
-        m_pRtMidiIn->openPort(portNmbr);
-        m_pRtMidiIn->setCallback(helperCb, this);
-        m_pRtMidiIn->setErrorCallback(errorCb, this);
-        m_pRtMidiIn->ignoreTypes( /*sysex*/false, /*timimng*/true, /*sense*/true );
         const auto rtMidiPort = rtmidiadapt::DeviceOnUsbPort( m_pRtMidiIn->getPortName(portNmbr) );
         m_deviceName = rtMidiPort.getDeviceName();
         m_devicePortName = rtMidiPort.getMidiPort();
         m_usbPortName = rtMidiPort.getUsbPortName();
+        m_pRtMidiIn->openPort(portNmbr, m_devicePortName);
+        m_pRtMidiIn->setCallback(helperCb, this);
+        m_pRtMidiIn->setErrorCallback(errorCb, this);
+        m_pRtMidiIn->ignoreTypes( /*sysex*/false, /*timimng*/true, /*sense*/true );
     }
     catch ( RtMidiError &error )
     {

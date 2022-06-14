@@ -1,4 +1,6 @@
 {
+    "cmake.buildDirectory": "${workspaceRoot}/build/${buildKit}_${buildType}",
+    "cmake.installPrefix": "${workspaceRoot}/build/${buildKit}_${buildType}/_INSTALL",
     "files.associations": {
         "*.tcc": "cpp",
         "any": "cpp",
