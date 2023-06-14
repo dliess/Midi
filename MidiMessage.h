@@ -69,7 +69,7 @@ public:
    }
    constexpr uint8_t noteNumber() const noexcept { return data1(); }
    constexpr uint8_t velocity() const noexcept { return data2(); }
-   constexpr float relativeVelocity() const noexcept
+   constexpr float normalizedVelocity() const noexcept
    {
       return velocity() / float(1 << 7);
    }
@@ -85,7 +85,7 @@ public:
    }
    constexpr uint8_t noteNumber() const noexcept { return data1(); }
    constexpr uint8_t velocity() const noexcept { return data2(); }
-   constexpr float relativeVelocity() const noexcept
+   constexpr float normalizedVelocity() const noexcept
    {
       return velocity() / float(1 << 7);
    }
@@ -118,13 +118,13 @@ public:
                          controllerValue)
    {
    }
-   static Message<ControlChange> fromRelativeValue(uint8_t channelNr,
+   static Message<ControlChange> fromNormalizedValue(uint8_t channelNr,
                                                    uint8_t controllerNumber,
                                                    float value)
    {
       return Message(channelNr, controllerNumber, value * RES_MAX);
    }
-   static Message<ControlChange> fromRelativeValue(uint8_t channelNr,
+   static Message<ControlChange> fromNormalizedValue(uint8_t channelNr,
                                                    uint8_t controllerNumber,
                                                    float value, uint16_t from,
                                                    uint16_t to)
@@ -134,11 +134,11 @@ public:
    }
    constexpr uint8_t controllerNumber() const noexcept { return data1(); }
    constexpr uint8_t controllerValue() const noexcept { return data2(); }
-   constexpr float getRelativeValue() const noexcept
+   constexpr float getNormalizedValue() const noexcept
    {
       return controllerValue() / float(RES_MAX);
    }
-   constexpr float getRelativeValue(uint16_t from, uint16_t to) const noexcept
+   constexpr float getNormalizedValue(uint16_t from, uint16_t to) const noexcept
    {
       if (controllerValue() <= from)
          return 0.0;
@@ -167,7 +167,7 @@ public:
    {
    }
    constexpr uint8_t value() const noexcept { return data1(); }
-   constexpr float relativeValue() const noexcept
+   constexpr float normalizedValue() const noexcept
    {
       return value() / float(1 << 7);
    }
@@ -187,7 +187,7 @@ public:
               (static_cast<uint16_t>(data2()) << 7)) -
              0x2000;
    }
-   constexpr float relativeValue() const noexcept
+   constexpr float normalizedValue() const noexcept
    {
       return (value() * 2) / float(1 << 14);
    }
@@ -292,12 +292,12 @@ struct RpnBase
        valueLsb(value & BASE_RES_BITMASK)
    {
    }
-   static RpnBase fromRelativeValue(uint8_t channelNr, int idMsb, int idLsb,
+   static RpnBase fromNormalizedValue(uint8_t channelNr, int idMsb, int idLsb,
                                     float value)
    {
       return RpnBase(channelNr, idMsb, idLsb, value * RES_MAX);
    }
-   static RpnBase fromRelativeValue(uint8_t channelNr, int idMsb, int idLsb,
+   static RpnBase fromNormalizedValue(uint8_t channelNr, int idMsb, int idLsb,
                                     float value, uint16_t from, uint16_t to)
    {
       return RpnBase(channelNr, idMsb, idLsb, from + (value * (to - from + 1)));
@@ -334,11 +334,11 @@ struct RpnBase
    {
       return ((valueMsb << 7) + valueLsb);
    }
-   constexpr float getRelativeValue() const noexcept
+   constexpr float getNormalizedValue() const noexcept
    {
       return ((valueMsb << 7) + valueLsb) / float(RES_MAX);
    }
-   constexpr float getRelativeValue(uint16_t from, uint16_t to) const noexcept
+   constexpr float getNormalizedValue(uint16_t from, uint16_t to) const noexcept
    {
       const uint16_t value = getValue();
       if (value <= from)
@@ -358,12 +358,12 @@ template <> struct Message<RPN> : public RpnBase
        RpnBase(channelNr, idMsb, idLsb, value)
    {
    }
-   static Message<RPN> fromRelativeValue(uint8_t channelNr, int idMsb,
+   static Message<RPN> fromNormalizedValue(uint8_t channelNr, int idMsb,
                                          int idLsb, float value)
    {
       return Message<RPN>(channelNr, idMsb, idLsb, value * RES_MAX);
    }
-   static Message<RPN> fromRelativeValue(uint8_t channelNr, int idMsb,
+   static Message<RPN> fromNormalizedValue(uint8_t channelNr, int idMsb,
                                          int idLsb, float value, uint16_t from,
                                          uint16_t to)
    {
@@ -387,12 +387,12 @@ template <> struct Message<NRPN> : public RpnBase
        RpnBase(channelNr, idMsb, idLsb, value)
    {
    }
-   static Message<NRPN> fromRelativeValue(uint8_t channelNr, int idMsb,
+   static Message<NRPN> fromNormalizedValue(uint8_t channelNr, int idMsb,
                                           int idLsb, float value)
    {
       return Message<NRPN>(channelNr, idMsb, idLsb, value * RES_MAX);
    }
-   static Message<NRPN> fromRelativeValue(uint8_t channelNr, int idMsb,
+   static Message<NRPN> fromNormalizedValue(uint8_t channelNr, int idMsb,
                                           int idLsb, float value, uint16_t from,
                                           uint16_t to)
    {
@@ -437,13 +437,13 @@ template <> struct Message<ControlChangeHighRes>
    {
    }
 
-   static Message<ControlChangeHighRes> fromRelativeValue(uint8_t channelNr,
+   static Message<ControlChangeHighRes> fromNormalizedValue(uint8_t channelNr,
                                                           int idMsb, int idLsb,
                                                           float value)
    {
       return Message(channelNr, idMsb, idLsb, value * RES_MAX);
    }
-   static Message<ControlChangeHighRes> fromRelativeValue(uint8_t channelNr,
+   static Message<ControlChangeHighRes> fromNormalizedValue(uint8_t channelNr,
                                                           int idMsb, int idLsb,
                                                           float value,
                                                           uint16_t from,
@@ -459,11 +459,11 @@ template <> struct Message<ControlChangeHighRes>
       return (msbValue << 7) + lsbValue;
    }
 
-   constexpr float getRelativeValue() const noexcept
+   constexpr float getNormalizedValue() const noexcept
    {
       return ((msbValue << 7) + lsbValue) / float(RES_MAX);
    }
-   constexpr float getRelativeValue(uint16_t from, uint16_t to) const noexcept
+   constexpr float getNormalizedValue(uint16_t from, uint16_t to) const noexcept
    {
       const uint16_t value = controllerValue();
       if (value <= from)
