@@ -176,9 +176,13 @@ public:
 template <> class Message<PitchBend> : public VoiceMsgLayout<3>
 {
 public:
-   constexpr Message(uint8_t channel, int16_t value) noexcept :
+   constexpr explicit Message(uint8_t channel, int16_t value) noexcept :
        VoiceMsgLayout<3>(Command<PitchBend>(channel), (value + 0x2000) & 0x7F,
                          ((value + 0x2000) >> 7) & 0x7F)
+   {
+   }
+   constexpr explicit Message(uint8_t channel, float normalizedValue) noexcept :
+      Message(channel, int16_t(normalizedValue * (1 << 13)))
    {
    }
    constexpr int16_t value() const noexcept
