@@ -30,6 +30,11 @@ bool Midi1Output::noteOff(uint8_t channel, uint8_t note, uint8_t velocity)
    return send(Message<NoteOff>(channel, note, velocity));
 }
 
+bool Midi1Output::pitchBend(uint8_t channel, float normalizedValue)
+{
+   return send(Message<PitchBend>(channel, normalizedValue));
+}
+
 bool Midi1Output::pitchBend(uint8_t channel, int16_t value)
 {
    return send(Message<PitchBend>(channel, value));

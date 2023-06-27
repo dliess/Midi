@@ -22,6 +22,7 @@ public:
     const IMidiOutMedium& medium() const;
     bool noteOn(uint8_t channel, uint8_t note, uint8_t velocity);
     bool noteOff(uint8_t channel, uint8_t note, uint8_t velocity);
+    bool pitchBend(uint8_t channel, float normalizedValue);
     bool pitchBend(uint8_t channel, int16_t value);
     bool afterTouchPoly(uint8_t channel, uint8_t note, int16_t value);
     bool afterTouch(uint8_t channel, int16_t value);
