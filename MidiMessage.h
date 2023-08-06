@@ -4,7 +4,13 @@
 #include <fmt/format.h>
 
 #include "Midi.h"
-#include "mpark/variant.hpp"
+#ifdef USE_MPARK_VARIANT
+#include <mpark/variant.hpp>
+#define VARIANT_NS mpark
+#else
+#include <variant>
+#define VARIANT_NS std
+#endif
 
 namespace midi
 {
@@ -508,8 +514,8 @@ template <> struct Message<SystemExclusive> : public std::vector<uint8_t>
    }
 };
 
-using MidiMessage = mpark::variant<
-    mpark::monostate, Message<NoteOff>, Message<NoteOn>,
+using MidiMessage = VARIANT_NS::variant<
+    VARIANT_NS::monostate, Message<NoteOff>, Message<NoteOn>,
     Message<AfterTouchPoly>, Message<ControlChange>, Message<ProgramChange>,
     Message<AfterTouchChannel>, Message<PitchBend>,
     Message<TimeCodeQuarterFrame>, Message<SongPosition>, Message<SongSelect>,
@@ -525,8 +531,8 @@ template <class... Ts> overload(Ts...) -> overload<Ts...>;
 
 inline std::string toString(const MidiMessage& msg)
 {
-   return mpark::visit(
-       midi::overload{[](const mpark::monostate& mono) -> std::string {
+   return VARIANT_NS::visit(
+       midi::overload{[](const VARIANT_NS::monostate& mono) -> std::string {
                          return "Unknown Midi Message";
                       },
                       [](auto&& all) -> std::string {

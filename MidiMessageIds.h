@@ -1,7 +1,13 @@
 #ifndef MIDI_MESSAGE_IDS_H
 #define MIDI_MESSAGE_IDS_H
 
+#ifdef USE_MPARK_VARIANT
 #include <mpark/variant.hpp>
+#define VARIANT_NS mpark
+#else
+#include <variant>
+#define VARIANT_NS std
+#endif
 
 #include "Midi.h"
 
@@ -64,8 +70,8 @@ template <> struct MidiMsgId<midi::SystemExclusive>
    int dummy;   // if not here, to_json segfaults
 };
 
-using MidiMessageId = mpark::variant<
-    mpark::monostate, MidiMsgId<midi::NoteOff>, MidiMsgId<midi::NoteOn>,
+using MidiMessageId = VARIANT_NS::variant<
+    VARIANT_NS::monostate, MidiMsgId<midi::NoteOff>, MidiMsgId<midi::NoteOn>,
     MidiMsgId<midi::ControlChange>, MidiMsgId<midi::ControlChangeHighRes>,
     MidiMsgId<midi::NRPN>, MidiMsgId<midi::RPN>,
     MidiMsgId<midi::AfterTouchPoly>, MidiMsgId<midi::AfterTouchChannel>,

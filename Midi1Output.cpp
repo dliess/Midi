@@ -72,7 +72,7 @@ bool Midi1Output::sysEx(const std::vector<uint8_t> &msg)
 
 bool Midi1Output::send(const MidiMessage &msg)
 {
-   mpark::visit(
+   VARIANT_NS::visit(
        overload{
            [this](const Message<NoteOn> &msg) { send(msg); },
            [this](const Message<NoteOff> &msg) { send(msg); },

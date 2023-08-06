@@ -9,6 +9,11 @@ set(CMAKE_DEBUG_POSTFIX _g)
 include(GNUInstallDirs)
 
 option (MIDI_BUILD_TESTS "build tests enabled" ON)
+option (USE_MPARK_VARIANT "use mpark variant" ON)
+if(USE_MPARK_VARIANT)
+  add_compile_definitions(USE_MPARK_VARIANT)
+endif()
+
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(cmake/CPM.cmake)
@@ -43,14 +48,16 @@ if(fmt_ADDED)
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 endif()
 
+if (USE_MPARK_VARIANT)
 CPMFindPackage(
   NAME mpark_variant
   GITHUB_REPOSITORY mpark/variant
   VERSION 1.4.0
 )
-if(mpark_variant_ADDED)
-  install(TARGETS mpark_variant EXPORT ${PROJECT_NAME}-targets
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
+#if(mpark_variant_ADDED)
+#  install(TARGETS mpark_variant EXPORT ${PROJECT_NAME}-targets
+#    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
+#endif()
 endif()
 
 include(CTest)
@@ -106,9 +113,14 @@ set_target_properties(${TARGET_NAME} PROPERTIES
 target_link_libraries(${TARGET_NAME}
   PUBLIC
     midimedium
-    mpark_variant
     fmt
 )
+
+if(USE_MPARK_VARIANT)
+target_link_libraries(${TARGET_NAME}
+  PUBLIC  mpark_variant
+)
+endif()
 
 install(TARGETS ${TARGET_NAME} EXPORT ${PROJECT_NAME}-targets
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
@@ -119,6 +131,10 @@ install(EXPORT ${PROJECT_NAME}-targets
   DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
 )
 
+if(USE_MPARK_VARIANT)
+  set(MPARK_DEPENDNCY "find_dependency(mpark_variant REQUIRED)")
+endif()
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/midi-config.cmake.in ${CMAKE_CURRENT_SOURCE_DIR}/cmake/midi-config.cmake @ONLY)
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/cmake/midi-config.cmake" 
         DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
 )

@@ -31,11 +31,11 @@ void midi::xrpn::XRpnOutputHandler::send(const XRPN_TYPE& msg, bool withRunningS
 {
     const auto channelIdx = msg.channelNr - 1;
     auto& active = m_activeXRpn[channelIdx];
-    if(!mpark::holds_alternative<XRPN_TYPE>(active)){
+    if(!VARIANT_NS::holds_alternative<XRPN_TYPE>(active)){
         active.template emplace<XRPN_TYPE>(msg.channelNr);
     }
     try{
-        sendXRpn(mpark::get<XRPN_TYPE>(active), msg, withRunningStatus);
+        sendXRpn(VARIANT_NS::get<XRPN_TYPE>(active), msg, withRunningStatus);
     }catch(...) {/* should not happen */}
 }
 

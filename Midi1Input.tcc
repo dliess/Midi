@@ -90,14 +90,14 @@ void midi::Midi1Input<MessageDrain>::processIncomingData(double timestamp, std::
             if(m_xrpnHandler && xrpn::XRpnInputHandler::isXRpnMsg(*pEvent))
             {
                 auto xrpnMsg = m_xrpnHandler->handleMsg(*pEvent);
-                if(!mpark::holds_alternative<mpark::monostate>(xrpnMsg)){
+                if(!VARIANT_NS::holds_alternative<VARIANT_NS::monostate>(xrpnMsg)){
                     MessageDrain::toBuffer(xrpnMsg);
                 }
             }
             else
             {
                 const auto ret = m_ccInputHandler.handleIncomingCCMsg(*pEvent);
-                mpark::visit(midi::overload{
+                VARIANT_NS::visit(midi::overload{
                     [this, &timestamp](const Message<ControlChange>& cc){
                         MessageDrain::toBuffer(cc);
                         if(m_pMidiInCb) m_pMidiInCb->onControlChange(timestamp, cc);                

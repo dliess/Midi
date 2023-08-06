@@ -70,7 +70,7 @@ inline bool operator==(const MidiMsgId<midi::SystemExclusive>& lhs,
 inline constexpr static MidiMessageId midiMessageToId(
    const midi::MidiMessage& msg) noexcept
 {
-   return mpark::visit(
+   return VARIANT_NS::visit(
       midi::overload{
          [](const midi::Message<midi::ControlChange>& msg) -> MidiMessageId {
             return MidiMsgId<midi::ControlChange>{msg.controllerNumber()};
@@ -103,7 +103,7 @@ inline constexpr static MidiMessageId midiMessageToId(
          [](const midi::Message<midi::SystemExclusive>& msg) -> MidiMessageId {
             return MidiMsgId<midi::SystemExclusive>{};
          },
-         [](auto&& other) -> MidiMessageId { return mpark::monostate(); }},
+         [](auto&& other) -> MidiMessageId { return VARIANT_NS::monostate(); }},
       msg);
 }
 
@@ -118,7 +118,7 @@ struct hash<midi::MidiMessageId>
    {
       hash<int> hasher;
       const auto index = midiMessageId.index();
-      return mpark::visit(
+      return VARIANT_NS::visit(
          midi::overload{
             [index](const midi::MidiMsgId<midi::ControlChange>& msg) -> size_t {
                return (index << 16) ^ msg.id;

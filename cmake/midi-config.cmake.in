@@ -5,7 +5,7 @@ list(APPEND CMAKE_MODULE_PATH "${midi_CMAKE_DIR}")
 
 find_dependency(rtmidi REQUIRED)
 find_dependency(fmt REQUIRED)
-find_dependency(mpark_variant REQUIRED)
+@MPARK_DEPENDNCY@
 
 if(NOT TARGET MIDI::midi)
     include("${midi_CMAKE_DIR}/Midi-targets.cmake")
