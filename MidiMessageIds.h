@@ -38,6 +38,12 @@ template <> struct MidiMsgId<midi::ControlChangeHighRes>
    int idLsb;
 };
 
+template <> struct MidiMsgId<midi::ControlChangeDoubleRes>
+{
+   int bottomHalfId;
+   int topHalfId;
+};
+
 template <> struct MidiMsgId<midi::NRPN>
 {
    int idMsb;
@@ -73,7 +79,7 @@ template <> struct MidiMsgId<midi::SystemExclusive>
 using MidiMessageId = VARIANT_NS::variant<
     VARIANT_NS::monostate, MidiMsgId<midi::NoteOff>, MidiMsgId<midi::NoteOn>,
     MidiMsgId<midi::ControlChange>, MidiMsgId<midi::ControlChangeHighRes>,
-    MidiMsgId<midi::NRPN>, MidiMsgId<midi::RPN>,
+    MidiMsgId<midi::ControlChangeDoubleRes>, MidiMsgId<midi::NRPN>, MidiMsgId<midi::RPN>,
     MidiMsgId<midi::AfterTouchPoly>, MidiMsgId<midi::AfterTouchChannel>,
     MidiMsgId<midi::PitchBend>, MidiMsgId<midi::SystemExclusive>>;
 

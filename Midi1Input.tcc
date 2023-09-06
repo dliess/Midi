@@ -23,7 +23,13 @@ void midi::Midi1Input<MessageDrain>::disableXRPN()
 template<typename MessageDrain>
 bool midi::Midi1Input<MessageDrain>::setCCHighResPair(int msbId, int lsbId) noexcept
 {
-    return m_ccInputHandler.setPair(msbId, lsbId);
+    return m_ccInputHandler.setHighResPair(msbId, lsbId);
+}
+
+template<typename MessageDrain>
+bool midi::Midi1Input<MessageDrain>::setCCDoubleResPair(int bottomHalfId, int topHalfId) noexcept
+{
+    return m_ccInputHandler.setDoubleResPair(bottomHalfId, topHalfId);
 }
 
 template<typename MessageDrain>

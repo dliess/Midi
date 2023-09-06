@@ -50,7 +50,8 @@ enum MsgType
 	SystemReset           = 0xFF,	///< System Real Time - System Reset                 CIN: 0x0F
 	RPN                   = 0x0100,
 	NRPN                  = 0x0101,
-	ControlChangeHighRes  = 0x0110
+	ControlChangeHighRes  = 0x0110,
+	ControlChangeDoubleRes  = 0x0111
 };
 
 constexpr MsgType getMsgTypeFromCommand(uint8_t data) noexcept;
@@ -82,6 +83,7 @@ std::string_view command2Str(uint8_t command) noexcept
 		case RPN                    : return "RPN";
 		case NRPN                   : return "NRPN";
 		case ControlChangeHighRes   : return "CCHighRes";
+		case ControlChangeDoubleRes : return "CCDoubleRes";
 		default                     : return "Unknown";       
 	}
 }

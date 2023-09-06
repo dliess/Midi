@@ -20,6 +20,16 @@ midi::CCInputHandler::Ret midi::CCInputHandler::handleIncomingCCMsg(const Messag
          Message<ControlChange> msb(ccMsg.channel(), msbCtrlNr, msbLastValue);
          return Message<ControlChangeHighRes>(msb, ccMsg);
       }
+      case CCPairMap::Data::Role::BottomHalf:
+      {
+         const uint8_t topHalfCCId = m_ccPairMap[ccMsg.controllerNumber()].pairId;
+         return Message<ControlChangeDoubleRes>::fromBottomHalfCC(ccMsg, topHalfCCId);
+      }
+      case CCPairMap::Data::Role::TopHalf:
+      {
+         const uint8_t bottomHalfCCId = m_ccPairMap[ccMsg.controllerNumber()].pairId;
+         return Message<ControlChangeDoubleRes>::fromTopHalfCC(ccMsg, bottomHalfCCId);
+      }
    }
    return Ret();
 }

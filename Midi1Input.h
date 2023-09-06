@@ -22,6 +22,7 @@ class Midi1Input : public MessageDrain
 public:
     Midi1Input(std::unique_ptr<IMidiInMedium> pMedium);
     bool setCCHighResPair(int msbId, int lsbId) noexcept;
+    bool setCCDoubleResPair(int bottomHalfId, int topHalfId) noexcept;
     IMidiInMedium& medium();
     const IMidiInMedium& medium() const;
     void registerMidiInCbIf(IMidi1InputCallback* pMidiInCb);

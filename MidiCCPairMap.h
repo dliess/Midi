@@ -16,22 +16,25 @@ public:
         {
             SingleValue,
             MSB,
-            LSB
+            LSB,
+            BottomHalf,
+            TopHalf
         };
         static constexpr int NO_PAIR = -1;
         Role role{Role::SingleValue};
         int pairId{NO_PAIR};
         std::array<uint8_t, midi::NUM_CHANNELS> lastValue{0};
     };
-    inline constexpr bool setPair(int msbId, int lsbId) noexcept;
-    inline constexpr const Data& operator[](int index) const noexcept;
-    inline Data& operator[](int index) noexcept;
+    constexpr bool setHighResPair(int msbId, int lsbId) noexcept;
+    constexpr bool setDoubleResPair(int bottomHalfId, int topHalfId) noexcept;
+    constexpr const Data& operator[](int index) const noexcept;
+    Data& operator[](int index) noexcept;
 private:
     std::array<Data, Message<ControlChange>::RES_MAX> m_data;
 };
 
 inline
-constexpr bool CCPairMap::setPair(int msbId, int lsbId) noexcept
+constexpr bool CCPairMap::setHighResPair(int msbId, int lsbId) noexcept
 {
    if (msbId < 0 || msbId >= m_data.size())
       return false;
@@ -42,6 +45,21 @@ constexpr bool CCPairMap::setPair(int msbId, int lsbId) noexcept
    m_data[msbId].pairId = lsbId;
    m_data[lsbId].role   = Data::Role::LSB;
    m_data[lsbId].pairId = msbId;
+   return true;
+}
+
+inline
+constexpr bool CCPairMap::setDoubleResPair(int bottomHalfId, int topHalfId) noexcept
+{
+   if (bottomHalfId < 0 || bottomHalfId >= m_data.size())
+      return false;
+   if (topHalfId < 0 || topHalfId >= m_data.size())
+      return false;
+
+   m_data[bottomHalfId].role   = Data::Role::BottomHalf;
+   m_data[bottomHalfId].pairId = topHalfId;
+   m_data[topHalfId].role   = Data::Role::TopHalf;
+   m_data[topHalfId].pairId = bottomHalfId;
    return true;
 }
 

@@ -19,6 +19,12 @@ inline bool operator==(const MidiMsgId<midi::ControlChangeHighRes>& lhs,
    return (lhs.idMsb == rhs.idMsb) && (lhs.idLsb == rhs.idLsb);
 }
 
+inline bool operator==(const MidiMsgId<midi::ControlChangeDoubleRes>& lhs,
+                       const MidiMsgId<midi::ControlChangeDoubleRes>& rhs) noexcept
+{
+   return (lhs.bottomHalfId == rhs.bottomHalfId) && (lhs.topHalfId == rhs.topHalfId);
+}
+
 inline bool operator==(const MidiMsgId<midi::NRPN>& lhs,
                        const MidiMsgId<midi::NRPN>& rhs) noexcept
 {
@@ -80,6 +86,11 @@ inline constexpr static MidiMessageId midiMessageToId(
             return MidiMsgId<midi::ControlChangeHighRes>{msg.msbCCId,
                                                          msg.lsbCCId};
          },
+         [](const midi::Message<midi::ControlChangeDoubleRes>& msg)
+            -> MidiMessageId {
+            return MidiMsgId<midi::ControlChangeDoubleRes>{msg.bottomHalfCCId,
+                                                           msg.topHalfCCId};
+         },
          [](const midi::Message<midi::NRPN>& msg) -> MidiMessageId {
             return MidiMsgId<midi::NRPN>{msg.idMsb, msg.idLsb};
          },
@@ -125,6 +136,8 @@ struct hash<midi::MidiMessageId>
             },
             [index](const midi::MidiMsgId<midi::ControlChangeHighRes>& msg)
                -> size_t { return (index << 16) ^ msg.idMsb; },
+            [index](const midi::MidiMsgId<midi::ControlChangeDoubleRes>& msg)
+               -> size_t { return (index << 16) ^ msg.bottomHalfId; },
             [index](const midi::MidiMsgId<midi::NRPN>& msg) -> size_t {
                return (index << 16) ^ (msg.idMsb << 7) ^ msg.idLsb;
             },

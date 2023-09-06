@@ -96,6 +96,9 @@ bool Midi1Output::send(const MidiMessage &msg)
            [this](const Message<ControlChangeHighRes> &msg) {
               m_CCHighResOutputHandler.send(msg);
            },
+           [this](const Message<ControlChangeDoubleRes> &msg) {
+              send(msg.asControlChangeMsg());
+           },
            [](auto &&other) {
               std::cerr << "INTERNAL ERROR, unknown midi message layout"
                         << std::endl;

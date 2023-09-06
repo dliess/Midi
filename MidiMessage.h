@@ -501,6 +501,94 @@ template <> struct Message<ControlChangeHighRes>
    }
 };
 
+template <> struct Message<ControlChangeDoubleRes>
+{
+   uint8_t channelId;
+   uint8_t bottomHalfCCId;
+   uint8_t topHalfCCId;
+   uint8_t value;
+
+   static constexpr int RES_MAX = 1 << 8;
+
+   constexpr Message(uint8_t channelId, uint8_t bottomHalfCCId, uint8_t topHalfCCId,
+                     uint16_t value) noexcept :
+       channelId(channelId),
+       bottomHalfCCId(bottomHalfCCId),
+       topHalfCCId(topHalfCCId),
+       value(value)
+   {
+   }
+
+   static Message<ControlChangeDoubleRes> fromBottomHalfCC(const Message<ControlChange>& bottomHalfCC, uint8_t topHalfCCId)
+   {
+      return Message(bottomHalfCC.channel(), bottomHalfCC.controllerNumber(), topHalfCCId, bottomHalfCC.controllerValue());
+   }
+   static Message<ControlChangeDoubleRes> fromTopHalfCC(const Message<ControlChange>& topHalfCC, uint8_t bottomHalfCCId)
+   {
+      return Message(topHalfCC.channel(), bottomHalfCCId, topHalfCC.controllerNumber(), topHalfCC.controllerValue() + 128);
+   }
+
+   static Message<ControlChangeDoubleRes> fromNormalizedValue(uint8_t channelNr,
+                                                          int idBottomHalf, int idTopHalf,
+                                                          float value)
+   {
+      return Message(channelNr, idBottomHalf, idTopHalf, value * RES_MAX);
+   }
+   static Message<ControlChangeDoubleRes> fromNormalizedValue(uint8_t channelNr,
+                                                          int idBottomHalf, int idTopHalf,
+                                                          float value,
+                                                          uint16_t from,
+                                                          uint16_t to)
+   {
+      return Message(channelNr, idBottomHalf, idTopHalf, from + (value * (to - from + 1)));
+   }
+
+   constexpr uint8_t channel() const noexcept { return channelId; }
+
+   constexpr uint8_t controllerValue() const noexcept
+   {
+      return value;
+   }
+
+   constexpr float getNormalizedValue() const noexcept
+   {
+      return value / float(RES_MAX);
+   }
+   constexpr float getNormalizedValue(uint16_t from, uint16_t to) const noexcept
+   {
+      const uint16_t value = controllerValue();
+      if (value <= from)
+         return 0.0;
+      if (value > to)
+         return 1.0;
+      const uint16_t res = to - from + 1;
+      return (2.0 * (value - from) + 1) / (2.0 * res);
+   }
+
+   constexpr uint8_t getBottomHalfCCId() const noexcept { return bottomHalfCCId; }
+   constexpr uint8_t getTopHalfCCId() const noexcept { return topHalfCCId; }
+
+
+   Message<ControlChange> asControlChangeMsg()
+       const noexcept
+   {
+      if(value < 128)
+      {
+         return Message<ControlChange>(channelId, bottomHalfCCId, value); 
+      }
+      else
+      {
+         return Message<ControlChange>(channelId, topHalfCCId, value - 128);
+      }
+   }
+
+   std::string toString() const noexcept
+   {
+      return fmt::format("CCDoubleRes ch:{0} [{1},{2}] [{3}]", channelId,
+                         bottomHalfCCId, topHalfCCId, value);
+   }
+};
+
 template <> struct Message<SystemExclusive> : public std::vector<uint8_t>
 {
    std::string toString() const noexcept
@@ -521,7 +609,8 @@ using MidiMessage = VARIANT_NS::variant<
     Message<TimeCodeQuarterFrame>, Message<SongPosition>, Message<SongSelect>,
     Message<TuneRequest>, Message<Clock>, Message<Start>, Message<Continue>,
     Message<Stop>, Message<ActiveSensing>, Message<SystemReset>, Message<RPN>,
-    Message<NRPN>, Message<ControlChangeHighRes>, Message<SystemExclusive>>;
+    Message<NRPN>, Message<ControlChangeHighRes>, Message<ControlChangeDoubleRes>, 
+    Message<SystemExclusive>>;
 
 template <class... Ts> struct overload : Ts...
 {

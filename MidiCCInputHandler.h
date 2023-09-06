@@ -17,8 +17,9 @@ namespace midi
 class CCInputHandler
 {
 public:
-   inline bool setPair(int msbId, int lsbId) noexcept;
-   using Ret = VARIANT_NS::variant<VARIANT_NS::monostate, Message<ControlChange>, Message<ControlChangeHighRes>>; 
+   bool setHighResPair(int msbId, int lsbId) noexcept;
+   bool setDoubleResPair(int bottomHalfId, int topHalfId) noexcept;
+   using Ret = VARIANT_NS::variant<VARIANT_NS::monostate, Message<ControlChange>, Message<ControlChangeHighRes>, Message<ControlChangeDoubleRes>>; 
    Ret handleIncomingCCMsg(const Message<ControlChange>& ccMsg) noexcept;
 
 private:
@@ -28,9 +29,15 @@ private:
 } // namespace midi
 
 inline
-bool midi::CCInputHandler::setPair(int msbId, int lsbId) noexcept
+bool midi::CCInputHandler::setHighResPair(int msbId, int lsbId) noexcept
 {
-   return m_ccPairMap.setPair(msbId, lsbId);
+   return m_ccPairMap.setHighResPair(msbId, lsbId);
+}
+
+inline
+bool midi::CCInputHandler::setDoubleResPair(int bottomHalfId, int topHalfId) noexcept
+{
+   return m_ccPairMap.setDoubleResPair(bottomHalfId, topHalfId);
 }
 
 #endif
