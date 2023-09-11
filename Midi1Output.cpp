@@ -70,7 +70,7 @@ bool Midi1Output::sysEx(const std::vector<uint8_t> &msg)
    return m_pMedium->send(msg);
 }
 
-bool Midi1Output::send(const MidiMessage &msg)
+void Midi1Output::send(const MidiMessage &msg)
 {
    VARIANT_NS::visit(
        overload{
@@ -100,11 +100,9 @@ bool Midi1Output::send(const MidiMessage &msg)
               send(msg.asControlChangeMsg());
            },
            [](auto &&other) {
-              std::cerr << "INTERNAL ERROR, unknown midi message layout"
-                        << std::endl;
+              throw std::runtime_error("INTERNAL ERROR, unknown midi message layout");
            }},
        msg);
-   return true;
 }
 
 bool Midi1Output::send(const MsgLayout<1> &midiMessage)

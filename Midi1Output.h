@@ -30,7 +30,7 @@ public:
     bool sendStart();
     bool sendStop();
     bool sysEx(const std::vector<uint8_t>& msg);
-    bool send(const MidiMessage& msg);
+    void send(const MidiMessage& msg);
     bool send(const MsgLayout<1>& midiMessage);
     bool send(const MsgLayout<2>& midiMessage);
     bool send(const MsgLayout<3>& midiMessage);
