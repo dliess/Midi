@@ -2,6 +2,9 @@
 #define MIDI_MESSAGE_H_
 
 #include <fmt/format.h>
+#include <string>
+#include <vector>
+#include <cstdint>
 
 #include "Midi.h"
 #ifdef USE_MPARK_VARIANT
